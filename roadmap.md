@@ -28,3 +28,4 @@
 # First-navigation performance
 - [x] Anticipate page loading through visible navigation links and intent-based link preloading without changing the presentation or data permissions.
 - [ ] Verify first-click navigation, preload timing and absence of duplicate platform requests.
+- [ ] Make likes and comments respond immediately with safe optimistic updates and rollback on failure; verify persisted results.
