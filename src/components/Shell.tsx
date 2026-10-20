@@ -17,8 +17,8 @@ export function Logo() {
       <motion.span whileHover={{ rotate: -12, scale: 1.1 }} className="grid h-9 w-9 place-items-center rounded-xl bg-gradient-sport text-accent-foreground">
         <Zap className="h-5 w-5 fill-current" />
       </motion.span>
-      <span className="font-display text-xl font-extrabold italic leading-none tracking-tight text-primary-foreground">
-        MATA<span className="text-gradient-sport">ESPORTES</span>
+      <span className="font-display text-xl font-extrabold italic leading-none tracking-tight text-foreground">
+        MATA<span className="text-accent">ESPORTES</span>
       </span>
     </Link>
   );
@@ -29,17 +29,17 @@ export function Shell({ children }: { children: ReactNode }) {
   const { inscricoes } = useStore();
   return (
     <div className="min-h-screen">
-      <header className="sticky top-0 z-30 bg-primary/95 backdrop-blur">
+      <header className="sticky top-0 z-30 bg-background/85 backdrop-blur-md">
         <div className="mx-auto flex h-16 max-w-6xl items-center gap-6 px-4 md:px-8">
           <Logo />
           <nav className="hidden items-center gap-1 md:flex">
             {NAV.map((n) => (
               <Link key={n.to} to={n.to} activeOptions={{ exact: n.to === "/" }}
-                className="relative rounded-full px-4 py-2 text-sm font-bold text-primary-foreground/70 transition-colors hover:text-primary-foreground">
+                className="relative rounded-full px-4 py-2 text-sm font-bold text-muted-foreground transition-colors hover:text-foreground">
                 {({ isActive }) => (
                   <>
-                    {isActive && <motion.span layoutId="nav-pill" className="absolute inset-0 rounded-full bg-gradient-sport" transition={{ type: "spring", stiffness: 400, damping: 32 }} />}
-                    <span className={`relative flex items-center gap-2 ${isActive ? "text-accent-foreground" : ""}`}><n.icon className="h-4 w-4" />{n.label}</span>
+                    {isActive && <motion.span layoutId="nav-pill" className="absolute inset-0 rounded-full bg-accent/10" transition={{ type: "spring", stiffness: 400, damping: 32 }} />}
+                    <span className={`relative flex items-center gap-2 ${isActive ? "text-accent" : ""}`}><n.icon className="h-4 w-4" />{n.label}</span>
                   </>
                 )}
               </Link>
@@ -47,16 +47,15 @@ export function Shell({ children }: { children: ReactNode }) {
           </nav>
           <div className="ml-auto flex items-center gap-3">
             {inscricoes.size > 0 && (
-              <motion.span initial={{ scale: 0 }} animate={{ scale: 1 }} className="hidden rounded-full bg-highlight px-3 py-1 text-xs font-bold text-highlight-foreground sm:inline">
+              <motion.span initial={{ scale: 0 }} animate={{ scale: 1 }} className="hidden rounded-full bg-highlight/10 px-3 py-1 text-xs font-bold text-highlight sm:inline">
                 {inscricoes.size} inscrição{inscricoes.size > 1 ? "ões" : ""}
               </motion.span>
             )}
             <Link to="/perfil/$id" params={{ id: ME }} aria-label="Meu perfil">
-              <span className="grid h-9 w-9 place-items-center rounded-full bg-gradient-sport font-display text-sm font-bold text-accent-foreground ring-2 ring-primary-foreground/20 transition hover:scale-110">{me.iniciais}</span>
+              <span className="grid h-9 w-9 place-items-center rounded-full bg-gradient-sport font-display text-sm font-bold text-accent-foreground ring-2 ring-border transition hover:scale-110">{me.iniciais}</span>
             </Link>
           </div>
         </div>
-        <div className="h-1 bg-gradient-sport" />
       </header>
 
       <main className="mx-auto max-w-6xl pb-24 md:pb-10">{children}</main>
