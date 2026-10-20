@@ -77,7 +77,7 @@ export function Avatar({ iniciais, size = "md", src }: { iniciais: string; size?
 export function Chip({ children, active, onClick }: { children: ReactNode; active?: boolean; onClick?: () => void }) {
   return (
     <Button type="button" onClick={onClick} variant="ghost" aria-pressed={Boolean(active)}
-      className={`shrink-0 rounded-sm border px-3.5 py-1.5 text-sm font-bold transition-colors ${active ? "border-primary bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground" : "border-border bg-transparent text-foreground hover:border-primary hover:bg-secondary"}`}>
+      className={`shrink-0 rounded-sm border-0 px-3.5 py-1.5 text-sm font-bold transition-colors ${active ? "bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground" : "bg-secondary text-secondary-foreground hover:bg-secondary/80"}`}>
       {children}
     </Button>
   );
