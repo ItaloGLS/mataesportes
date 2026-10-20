@@ -10,3 +10,4 @@
 - [ ] Verify real authenticated flows, persistence and access controls.
 - [ ] Deliver clean source archive and React Native adaptation guide.
 - [ ] Soften mobile presentation and touch controls, remove redundant login CTAs and improve real empty states without mock data.
+- [ ] Apply the approved softer presentation to the website as well.
