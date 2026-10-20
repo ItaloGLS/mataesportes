@@ -10,7 +10,7 @@ suite('Real database access and registration rules',()=>{
   for(let i=0;i<2;i++){
    const password=crypto.randomUUID()+'Aa1!';const email=`sports-rules-${crypto.randomUUID()}@test.mataesportes.com.br`;
    const r=await adminRequest('/users','POST',{email,password,email_confirm:true,user_metadata:{nome:'Conferência temporária'}});expect(r.ok).toBe(true);const u=await r.json();users.push({id:u.id,token:''});
-   const auth=await request('/auth/v1/token?grant_type=password',undefined,'POST',{email,password});expect(auth.ok).toBe(true);users[i].token=(await auth.json()).access_token;
+   const auth=await request('/auth/v1/token?grant_type=password',undefined,'POST',{email,password});expect(auth.ok).toBe(true);const created=users[i];if(!created)throw new Error('Test account missing');created.token=(await auth.json()).access_token;
   }
   const ev=await request('/rest/v1/eventos',users[0]?.token,'POST',{organizador:users[0]?.id,nome:'Teste de vagas temporário',modalidade:'Corrida',cidade:'Palmares',data:'2099-01-01',local:'Centro',vagas:1});expect(ev.ok).toBe(true);eventId=(await ev.json())[0].id;
   const post=await request('/rest/v1/posts',users[0]?.token,'POST',{autor:users[0]?.id,texto:'Registro temporário de regra',tipo:'Treino',modalidade:'Corrida',cidade:'Palmares'});expect(post.ok).toBe(true);postId=(await post.json())[0].id;

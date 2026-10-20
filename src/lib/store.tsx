@@ -43,7 +43,7 @@ export function useStore(){
  const {data}=useSuspenseQuery(platformQuery);const {user,ready}=useSession();const qc=useQueryClient();
  const server=useServerFn(mutatePlatform);
  const mutation=useMutation({mutationFn:(action:Action)=>server({data:action}),onSuccess:async()=>{await qc.invalidateQueries({queryKey:['platform']});await qc.invalidateQueries({queryKey:['inscricoes']});await qc.invalidateQueries({queryKey:['participantes']});},onError:()=>toast.error('Não foi possível salvar. Confira os dados e tente novamente.')});
- const personal=useQuery({queryKey:['inscricoes',user?.id],enabled:ready && Boolean(user),queryFn:async()=>{const {data,error}=await supabase.from('inscricoes').select('evento_id').eq('user_id',user?.id??'');if(error)throw error;return data??[];}});
+ const personal=useQuery({queryKey:['inscricoes',user?.id],enabled:ready && Boolean(user),queryFn:async()=>{const rows:{evento_id:string}[]=[];for(let start=0;;start+=500){const {data,error}=await supabase.from('inscricoes').select('evento_id').eq('user_id',user?.id??'').order('evento_id').range(start,start+499);if(error)throw error;rows.push(...(data??[]));if((data?.length??0)<500)return rows;}}});
  const act=async(action:Action)=>{if(!user){toast.info('Entre na sua conta para continuar.');return false;}await mutation.mutateAsync(action);return true;};
  const liked=new Set(data.likes.filter(l=>l.user_id===user?.id).map(l=>l.post_id));
  return {...data,user,me:data.users.find(u=>u.id===user?.id),ready,pending:mutation.isPending,liked,inscricoes:new Set(personal.data?.map(i=>i.evento_id)??[]),userById:(id:string)=>data.users.find(u=>u.id===id),act,
