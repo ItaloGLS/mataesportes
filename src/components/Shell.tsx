@@ -18,16 +18,13 @@ const NAV = [
 
 export function Logo() {
   return (
-    <Link to="/" className="group flex items-center gap-2.5">
+    <Link to="/" aria-label="Mata Esportes" className="group flex items-center">
       <motion.img
         src={logoMark}
         alt="Símbolo Mata Esportes"
         whileHover={{ rotate: -6 }}
-        className="h-9 w-auto rounded-sm bg-primary object-contain p-1"
+        className="h-11 w-auto object-contain"
       />
-      <span className="font-logo text-2xl font-extrabold leading-none text-foreground sm:text-3xl">
-        MATA<span className="ml-1">ESPORTES</span>
-      </span>
     </Link>
   );
 }
