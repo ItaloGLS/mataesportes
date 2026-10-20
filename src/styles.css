@@ -52,7 +52,7 @@
   --muted-foreground: oklch(0.5 0.02 265);
   --accent: oklch(0.62 0.22 258);
   --accent-foreground: oklch(0.99 0 0);
-  --highlight: oklch(0.64 0.24 32);
+  --highlight: oklch(0.78 0.16 75);
   --highlight-foreground: oklch(0.99 0 0);
   --destructive: oklch(0.6 0.22 25);
   --destructive-foreground: oklch(0.99 0 0);
@@ -82,7 +82,6 @@
 @utility hero-fade { background: var(--gradient-hero); }
 
 @utility text-gradient-sport {
-  background: linear-gradient(90deg, var(--accent), var(--highlight));
-  -webkit-background-clip: text; background-clip: text; color: transparent;
+  background: none; color: var(--accent);
 }
-@utility bg-gradient-sport { background: linear-gradient(120deg, var(--accent), var(--highlight)); }
+@utility bg-gradient-sport { background: var(--accent); }
