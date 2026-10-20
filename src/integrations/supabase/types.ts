@@ -60,11 +60,14 @@ export type Database = {
           created_at: string
           data: string
           descricao: string
+          encerrado: boolean
+          horario: string
           id: string
           local: string
           modalidade: string
           nome: string
           organizador: string
+          resultado: Json
           vagas: number
           valor: string
         }
@@ -74,11 +77,14 @@ export type Database = {
           created_at?: string
           data: string
           descricao?: string
+          encerrado?: boolean
+          horario?: string
           id?: string
           local: string
           modalidade: string
           nome: string
           organizador: string
+          resultado?: Json
           vagas: number
           valor?: string
         }
@@ -88,11 +94,14 @@ export type Database = {
           created_at?: string
           data?: string
           descricao?: string
+          encerrado?: boolean
+          horario?: string
           id?: string
           local?: string
           modalidade?: string
           nome?: string
           organizador?: string
+          resultado?: Json
           vagas?: number
           valor?: string
         }

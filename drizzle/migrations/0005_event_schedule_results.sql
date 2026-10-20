@@ -1,0 +1,5 @@
+ALTER TABLE public.eventos ADD COLUMN horario text NOT NULL DEFAULT '';
+ALTER TABLE public.eventos ADD COLUMN encerrado boolean NOT NULL DEFAULT false;
+ALTER TABLE public.eventos ADD COLUMN resultado jsonb NOT NULL DEFAULT '[]'::jsonb;
+ALTER TABLE public.eventos ADD CONSTRAINT eventos_resultado_array CHECK (jsonb_typeof(resultado)='array');
+CREATE OR REPLACE FUNCTION public.check_event_capacity() RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER SET search_path=public AS $$ DECLARE capacity integer; event_day date; is_closed boolean; BEGIN SELECT vagas,data,encerrado INTO capacity,event_day,is_closed FROM public.eventos WHERE id=NEW.evento_id FOR UPDATE; IF capacity IS NULL THEN RAISE EXCEPTION 'Evento não encontrado'; END IF; IF event_day < CURRENT_DATE OR is_closed THEN RAISE EXCEPTION 'Evento encerrado'; END IF; IF EXISTS(SELECT 1 FROM public.inscricoes WHERE evento_id=NEW.evento_id AND user_id=NEW.user_id) THEN RETURN NULL; END IF; IF (SELECT count(*) FROM public.inscricoes WHERE evento_id=NEW.evento_id)>=capacity THEN RAISE EXCEPTION 'Vagas esgotadas'; END IF; RETURN NEW; END; $$;
