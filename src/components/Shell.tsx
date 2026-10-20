@@ -48,8 +48,8 @@ export function Shell({ children, bare }: { children: ReactNode; bare?: boolean 
                 )}
               </Link>
             ))}
-          </nav>
-          <div className="flex items-center justify-end gap-3">
+          </nav>}
+          {!bare && <div className="flex items-center justify-end gap-3">
             {user ? <DropdownMenu><DropdownMenuTrigger asChild><button aria-label="Menu da conta" className="grid h-11 w-11 cursor-pointer place-items-center rounded-full bg-secondary text-secondary-foreground ring-1 ring-border"><User className="h-4 w-4" /></button></DropdownMenuTrigger><DropdownMenuContent align="end"><DropdownMenuItem onClick={()=>void navigate({to:'/perfil/$id',params:{id:user.id}})}><User className="h-4 w-4" />Meu perfil</DropdownMenuItem><DropdownMenuItem onClick={async()=>{await queryClient.cancelQueries();queryClient.clear();await supabase.auth.signOut();await navigate({to:'/auth',replace:true});}}><LogOut className="h-4 w-4" />Sair</DropdownMenuItem></DropdownMenuContent></DropdownMenu> : <Button className="hidden md:inline-flex" asChild disabled={!ready} variant="outline"><Link to="/auth">Entrar</Link></Button>}
           </div>
         </div>
