@@ -35,6 +35,7 @@ export const mutatePlatform = createServerFn({method:'POST'}).middleware([requir
  let error: {message:string} | null = null;
  const ownedPost=async(id:string)=>{const {data:p}=await db.from('posts').select('autor').eq('id',id).maybeSingle();if(p?.autor!==uid)throw new Error('Publicação não encontrada ou sem permissão.');};
  const ownedEvent=async(id:string)=>{const {data:e}=await db.from('eventos').select('organizador').eq('id',id).maybeSingle();if(e?.organizador!==uid)throw new Error('Evento não encontrado ou sem permissão.');};
+ const ownedOpportunity=async(id:string)=>{const {data:o}=await db.from('oportunidades').select('autor').eq('id',id).maybeSingle();if(o?.autor!==uid)throw new Error('Oportunidade não encontrada ou sem permissão.');};
  switch(data.kind){
   case 'post.create': ({error}=await db.from('posts').insert({...data.value,autor:uid}));break;
   case 'post.update': await ownedPost(data.id);({error}=await db.from('posts').update(data.value).eq('id',data.id).eq('autor',uid));break;
@@ -48,6 +49,9 @@ export const mutatePlatform = createServerFn({method:'POST'}).middleware([requir
   case 'registration': ({error}=data.active?await db.from('inscricoes').insert({evento_id:data.id,user_id:uid}):await db.from('inscricoes').delete().eq('evento_id',data.id).eq('user_id',uid));break;
   case 'follow': if(data.id===uid)throw new Error('Não é possível seguir seu próprio perfil.');({error}=data.active?await db.from('follows').upsert({follower:uid,followed:data.id},{onConflict:'follower,followed',ignoreDuplicates:true}):await db.from('follows').delete().eq('follower',uid).eq('followed',data.id));break;
   case 'profile': ({error}=await db.rpc('save_sports_profile',{payload:data.value}));break;
+  case 'opportunity.create': ({error}=await db.from('oportunidades').insert({...data.value,modalidade:data.value.modalidade||null,prazo:data.value.prazo||null,autor:uid}));break;
+  case 'opportunity.update': await ownedOpportunity(data.id);({error}=await db.from('oportunidades').update({...data.value,modalidade:data.value.modalidade||null,prazo:data.value.prazo||null}).eq('id',data.id).eq('autor',uid));break;
+  case 'opportunity.delete': await ownedOpportunity(data.id);({error}=await db.from('oportunidades').delete().eq('id',data.id).eq('autor',uid));break;
  }
  if(error){if(error.message.includes('Vagas'))throw new Error(error.message);if(error.message.includes('encerrado'))throw new Error('Evento encerrado.');throw new Error('Não foi possível salvar. Confira os dados e tente novamente.');}
  return {ok:true};
