@@ -5,7 +5,7 @@ import { useStore } from '@/lib/store';
 
 const input = 'mt-1 w-full rounded-sm border bg-card px-3 py-2 text-sm';
 
-export function OportunidadeForm({ oportunidade, onDone }: { oportunidade?: Oportunidade; onDone: () => void }) {
+export function OportunidadeForm({ oportunidade, onDone }: { oportunidade?: Oportunidade | undefined; onDone: () => void }) {
   const { act, pending } = useStore();
   const [message, setMessage] = useState('');
   return (
