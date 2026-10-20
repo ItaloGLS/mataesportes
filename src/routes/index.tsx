@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import hero from "@/assets/sports-cover.jpg";
+import hero from "@/assets/hero.jpg";
 import { motion, AnimatePresence } from "motion/react";
 import { Shell, FadeIn } from "@/components/Shell";
 import { Button } from "@/components/ui/button";
@@ -50,7 +50,7 @@ function Feed() {
   return (
     <Shell>
       <section className="sports-cover relative mx-4 overflow-hidden rounded-[20px] bg-primary md:mx-8">
-        <motion.img initial={{ scale: 1.025 }} animate={{ scale: 1 }} transition={{ duration: 1.4, ease: "easeOut" }} src={hero} width={1536} height={768} fetchPriority="high" alt="Imagem ilustrativa de atletas treinando em uma pista" className="sports-cover-image h-64 w-full object-cover md:h-72" />
+        <motion.img initial={{ scale: 1.025 }} animate={{ scale: 1 }} transition={{ duration: 1.4, ease: "easeOut" }} src={hero} width={1536} height={768} fetchPriority="high" alt="Imagem ilustrativa de ciclistas e corredores numa estrada entre canaviais, inspirada na Mata Sul de Pernambuco" className="sports-cover-image h-64 w-full object-cover md:h-72" />
         <div className="hero-fade absolute inset-0 flex flex-col justify-end p-5 text-primary-foreground md:justify-center md:p-8 lg:p-10">
           <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-xs font-bold uppercase tracking-widest text-accent">Mata Sul · Pernambuco</motion.p>
           <motion.h1 initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="mt-2 max-w-sm font-display text-4xl font-extrabold uppercase leading-none md:text-5xl lg:text-6xl">Seu talento<br /><span className="text-accent">merece ser visto.</span></motion.h1>
