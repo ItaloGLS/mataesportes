@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { motion,AnimatePresence } from 'motion/react';
 import { Link } from '@tanstack/react-router';
-import { Heart,MessageCircle,MapPin,Send,Pencil,Trash2 } from 'lucide-react';
+import { Heart,MessageCircle,MapPin,Send,Pencil,Trash2,MoreVertical } from 'lucide-react';
 import type { Post } from '@/lib/data';
 import { useStore } from '@/lib/store';
 import { Avatar } from './Shell';
 import { Button } from './ui/button';
+import { DropdownMenu,DropdownMenuContent,DropdownMenuItem,DropdownMenuTrigger } from './ui/dropdown-menu';
 import { SignInPrompt } from './RouteStates';
 export function PostCard({post}:{post:Post}){
  const {liked,toggleLike,comentar,userById,user,act,pending}=useStore();const [open,setOpen]=useState(false);const [txt,setTxt]=useState('');const [editing,setEditing]=useState(false);const [body,setBody]=useState(post.texto);const autor=userById(post.autor);if(!autor)return null;const isLiked=liked.has(post.id);
