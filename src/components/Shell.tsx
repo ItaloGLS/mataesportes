@@ -17,12 +17,15 @@ const NAV = [
 
 export function Logo() {
   return (
-    <Link to="/" className="group flex items-center gap-2">
-      <motion.span whileHover={{ rotate: -4 }} className="grid h-9 w-9 place-items-center rounded-sm bg-primary font-display text-2xl font-black text-accent">
-        M
-      </motion.span>
+    <Link to="/" className="group flex items-center gap-2.5">
+      <motion.img
+        src={logoMark}
+        alt="Símbolo Mata Esportes"
+        whileHover={{ rotate: -6 }}
+        className="h-9 w-auto rounded-sm bg-primary object-contain p-1"
+      />
       <span className="font-logo text-2xl font-extrabold leading-none text-foreground sm:text-3xl">
-        MATA<span className="ml-1">ESPORTES</span>
+        MATA<span className="ml-1 text-accent">ESPORTES</span>
       </span>
     </Link>
   );
