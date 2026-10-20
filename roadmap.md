@@ -29,3 +29,7 @@
 - [x] Anticipate page loading through visible navigation links and intent-based link preloading without changing the presentation or data permissions.
 - [x] Verify first-click navigation, preload timing and absence of duplicate platform requests.
 - [x] Make likes and comments respond immediately with safe optimistic updates and rollback on failure; verify persisted results.
+
+# Loading efficiency
+- [ ] Reduce repeated reads and repeated data processing while preserving saved data and refresh after changes.
+- [ ] Verify section navigation with delayed requests and run regression tests.

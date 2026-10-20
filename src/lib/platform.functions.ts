@@ -4,6 +4,7 @@ import type { Database } from '@/integrations/supabase/types';
 import { requireSupabaseAuth } from '@/integrations/supabase/auth-middleware';
 import { actionSchema } from './domain/schemas';
 import { initials, type User, type Post, type Evento, type Oportunidade } from './data';
+import { groupBy } from './domain/data-index';
 
 export const getPlatform = createServerFn({method:'GET'}).handler(async () => {
  const url = process.env['SUPABASE_URL']; const key = process.env['SUPABASE_PUBLISHABLE_KEY'];
@@ -23,9 +24,13 @@ export const getPlatform = createServerFn({method:'GET'}).handler(async () => {
  const mediaPaths = [...new Set([...profiles.map(p=>p.avatar_path),...rawPosts.map(p=>p.image_path)].filter((p):p is string=>Boolean(p)))];
  const media:Record<string,string>={};
  if(mediaPaths.length){const {data,error}=await db.storage.from('sports-media').createSignedUrls(mediaPaths,3600);if(!error)for(const item of data??[]){if(item.path && item.signedUrl)media[item.path]=item.signedUrl.replace(url,process.env['VITE_SUPABASE_URL']??url);}}
- const users:User[]=profiles.map(p=>({id:p.id,nome:p.nome,role:p.atuacao as User['role'],cidade:p.cidade,modalidades:p.modalidades,bio:p.bio,iniciais:initials(p.nome),avatar_path:p.avatar_path,avatarUrl:p.avatar_path?media[p.avatar_path]:undefined,podios:podios.filter(x=>x.user_id===p.id).map(x=>({titulo:x.titulo,posicao:x.posicao as 1|2|3,ano:x.ano})),marcas:marcas.filter(x=>x.user_id===p.id).map(x=>({prova:x.prova,valor:x.valor}))}));
- const posts:Post[]=rawPosts.map(p=>({...p,tipo:p.tipo as Post['tipo'],tempo:new Date(p.created_at).toLocaleDateString('pt-BR'),imageUrl:p.image_path?media[p.image_path]:undefined,likes:likes.filter(l=>l.post_id===p.id).length,comentarios:comments.filter(c=>c.post_id===p.id).map(c=>({id:c.id,autor:c.autor,texto:c.texto}))}));
- const eventos:Evento[]=events.map(e=>({...e,inscritos:Number(counts.data?.find(c=>c.id===e.id)?.inscritos??0)}));
+ const podiumsByUser=groupBy(podios,p=>p.user_id);const marksByUser=groupBy(marcas,m=>m.user_id);
+ const likesByPost=groupBy(likes,l=>l.post_id);const commentsByPost=groupBy(comments,c=>c.post_id);
+ const countsByEvent=new Map(counts.data?.map(c=>[c.id,Number(c.inscritos)])??[]);
+ const dateFormatter=new Intl.DateTimeFormat('pt-BR');
+ const users:User[]=profiles.map(p=>({id:p.id,nome:p.nome,role:p.atuacao as User['role'],cidade:p.cidade,modalidades:p.modalidades,bio:p.bio,iniciais:initials(p.nome),avatar_path:p.avatar_path,avatarUrl:p.avatar_path?media[p.avatar_path]:undefined,podios:(podiumsByUser.get(p.id)??[]).map(x=>({titulo:x.titulo,posicao:x.posicao as 1|2|3,ano:x.ano})),marcas:(marksByUser.get(p.id)??[]).map(x=>({prova:x.prova,valor:x.valor}))}));
+ const posts:Post[]=rawPosts.map(p=>({...p,tipo:p.tipo as Post['tipo'],tempo:dateFormatter.format(new Date(p.created_at)),imageUrl:p.image_path?media[p.image_path]:undefined,likes:likesByPost.get(p.id)?.length??0,comentarios:(commentsByPost.get(p.id)??[]).map(c=>({id:c.id,autor:c.autor,texto:c.texto}))}));
+ const eventos:Evento[]=events.map(e=>({...e,inscritos:countsByEvent.get(e.id)??0}));
  const oportunidades:Oportunidade[]=rawOpportunities.map(o=>({...o,tipo:o.tipo as Oportunidade['tipo']}));
  return {users,posts,eventos,likes,follows,oportunidades};
 });

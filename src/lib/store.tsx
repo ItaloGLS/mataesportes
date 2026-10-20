@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
+import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { useQuery, useSuspenseQuery, useQueryClient, useMutation, useIsMutating } from '@tanstack/react-query';
 import { useRouter } from '@tanstack/react-router';
 import { useServerFn } from '@tanstack/react-start';
@@ -84,10 +84,12 @@ export function useStore(postId?:string){
   const action=m.state.variables as Action | undefined;
   return (action?.kind==='like' || action?.kind==='comment.create') && action.id===postId;
  }});
- const personal=useQuery({queryKey:['inscricoes',user?.id],enabled:ready && Boolean(user),queryFn:async()=>{const rows:{evento_id:string}[]=[];for(let start=0;;start+=500){const {data,error}=await supabase.from('inscricoes').select('evento_id').eq('user_id',user?.id??'').order('evento_id').range(start,start+499);if(error)throw error;rows.push(...(data??[]));if((data?.length??0)<500)return rows;}}});
+ const personal=useQuery({queryKey:['inscricoes',user?.id],enabled:ready && Boolean(user),staleTime:60000,queryFn:async()=>{const rows:{evento_id:string}[]=[];for(let start=0;;start+=500){const {data,error}=await supabase.from('inscricoes').select('evento_id').eq('user_id',user?.id??'').order('evento_id').range(start,start+499);if(error)throw error;rows.push(...(data??[]));if((data?.length??0)<500)return rows;}}});
  const act=async(action:Action)=>{if(!user){toast.info('Entre na sua conta para continuar.');return false;}await mutation.mutateAsync(action);return true;};
- const liked=new Set(data.likes.filter(l=>l.user_id===user?.id).map(l=>l.post_id));
- return {...data,user,me:data.users.find(u=>u.id===user?.id),ready,pending:mutation.isPending,socialPending:socialPending>0,liked,inscricoes:new Set(personal.data?.map(i=>i.evento_id)??[]),userById:(id:string)=>data.users.find(u=>u.id===id),act,
+ const liked=useMemo(()=>new Set(data.likes.filter(l=>l.user_id===user?.id).map(l=>l.post_id)),[data.likes,user?.id]);
+ const usersById=useMemo(()=>new Map(data.users.map(u=>[u.id,u])),[data.users]);
+ const inscricoes=useMemo(()=>new Set(personal.data?.map(i=>i.evento_id)??[]),[personal.data]);
+ return {...data,user,me:usersById.get(user?.id??''),ready,pending:mutation.isPending,socialPending:socialPending>0,liked,inscricoes,userById:(id:string)=>usersById.get(id),act,
   toggleLike:(id:string)=>act({kind:'like',id,active:!liked.has(id)}),
   comentar:(id:string,texto:string)=>act({kind:'comment.create',id,texto}),
   publicar:(p:Omit<Post,'id'|'autor'|'tempo'|'likes'|'comentarios'|'image_path'> & {image_path?:string|null})=>act({kind:'post.create',value:{...p,image_path:p.image_path??null}}),
