@@ -27,16 +27,16 @@ export function Logo() {
   );
 }
 
-export function Shell({ children }: { children: ReactNode }) {
+export function Shell({ children, bare }: { children: ReactNode; bare?: boolean }) {
   const { user, ready } = useSession();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   return (
     <div className="min-h-screen">
       <header className="sticky top-0 z-30 bg-background/55 backdrop-blur-md">
-        <div className="mx-auto grid h-20 max-w-6xl grid-cols-[1fr_auto] items-center gap-4 px-4 md:grid-cols-[1fr_auto_1fr] md:px-8">
+        <div className={bare ? "mx-auto flex h-20 max-w-6xl items-center px-4 md:px-8" : "mx-auto grid h-20 max-w-6xl grid-cols-[1fr_auto] items-center gap-4 px-4 md:grid-cols-[1fr_auto_1fr] md:px-8"}>
           <Logo />
-          <nav className="hidden items-center justify-center gap-1 md:flex">
+          {!bare && <nav className="hidden items-center justify-center gap-1 md:flex">
             {NAV.map((n) => (
               <Link key={n.to} to={n.to} activeOptions={{ exact: n.to === "/" }}
                 className="relative px-4 py-3 text-sm font-bold text-muted-foreground transition-colors hover:text-foreground">
