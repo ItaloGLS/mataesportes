@@ -12,3 +12,7 @@ describe('Sports input rules',()=>{
  it('rejects invalid opportunity types and cities',()=>{expect(opportunitySchema.safeParse({...opportunity,tipo:'Sorteio'}).success).toBe(false);expect(opportunitySchema.safeParse({...opportunity,cidade:'Recife'}).success).toBe(false);});
  it('rejects invalid opportunity deadlines',()=>{expect(opportunitySchema.safeParse({...opportunity,prazo:'20/10/2026'}).success).toBe(false);expect(opportunitySchema.safeParse({...opportunity,prazo:'2027-03-01'}).success).toBe(true);});
 });
+describe('Event schedule and results',()=>{
+ it('accepts a valid time and rejects invalid ones',()=>{expect(eventSchema.safeParse({...event,horario:'07:30'}).success).toBe(true);expect(eventSchema.safeParse({...event,horario:'25:00'}).success).toBe(false);});
+ it('requires a name in each final result row',()=>{expect(eventSchema.safeParse({...event,encerrado:true,resultado:[{posicao:1,nome:'',marca:'3x1'}]}).success).toBe(false);expect(eventSchema.safeParse({...event,encerrado:true,resultado:[{posicao:1,nome:'Palmares FC',marca:'3x1'}]}).success).toBe(true);});
+});
