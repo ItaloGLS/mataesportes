@@ -54,7 +54,7 @@ export function Shell({ children }: { children: ReactNode }) {
         </div>
       </header>
 
-      <main className="mx-auto max-w-6xl pb-24 md:pb-10">{children}</main>
+      <main className="mobile-scroll-space mx-auto max-w-6xl md:pb-10">{children}</main>
 
       <nav aria-label="Navegação do celular" className="mobile-bottom-nav fixed inset-x-3 bottom-3 z-30 grid grid-cols-5 items-center rounded-touch bg-card/95 p-2 backdrop-blur md:hidden">
         {NAV.slice(0,2).map((n) => <Link key={n.to} to={n.to} activeOptions={{exact:n.to==='/'}} className="flex min-h-12 flex-col items-center gap-1 text-[10px] font-semibold text-muted-foreground">{({isActive})=><><span className={`grid h-7 w-10 place-items-center rounded-full ${isActive?'bg-secondary text-foreground':''}`}><n.icon className="h-5 w-5" strokeWidth={isActive?2.5:2}/></span>{n.label}</>}</Link>)}

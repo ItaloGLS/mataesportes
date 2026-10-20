@@ -61,7 +61,8 @@
   --border: oklch(0.86 0.005 90);
   --input: var(--border);
   --ring: var(--foreground);
-  --gradient-hero: linear-gradient(90deg, oklch(0.16 0.005 85 / 0.88), oklch(0.16 0.005 85 / 0.25) 72%, transparent);
+  --gradient-hero: linear-gradient(90deg, oklch(0.16 0.005 85 / 0.82), oklch(0.16 0.005 85 / 0.42) 38%, transparent 70%);
+  --gradient-hero-mobile: linear-gradient(0deg, oklch(0.16 0.005 85 / 0.95), oklch(0.16 0.005 85 / 0.25) 65%, transparent);
   --shadow-card: none;
   --shadow-mobile-nav: 0 6px 24px oklch(0.23 0.005 85 / 0.12);
   --gradient-tabs-edge: linear-gradient(90deg, transparent, var(--background));
@@ -99,6 +100,7 @@
   box-shadow: var(--shadow-card);
 }
 @utility hero-fade { background: var(--gradient-hero); }
+.sports-cover-image { object-position: center top; }
 
 @utility text-gradient-sport {
   background: none; color: var(--accent);
@@ -124,8 +126,10 @@
   .mobile-event { border: 0; background: var(--card); border-radius: var(--radius-touch); padding: 18px; margin-top: 12px; }
   .mobile-date { border-radius: 12px; }
 @media (max-width: 767px) {
+  .mobile-scroll-space { padding-bottom: calc(100px + env(safe-area-inset-bottom)); }
   .mobile-bottom-nav { box-shadow: var(--shadow-mobile-nav); padding-bottom: env(safe-area-inset-bottom); }
-  .mobile-tab-edge::after { content: ''; position: absolute; right: 0; top: 0; bottom: 0; width: 22px; pointer-events: none; background: var(--gradient-tabs-edge); }
+  .sports-cover-image { object-position: 75% 35%; }
+  .sports-cover .hero-fade { background: var(--gradient-hero-mobile); }
 }
 
 @media (prefers-reduced-motion: reduce) {

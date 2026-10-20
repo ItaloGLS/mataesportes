@@ -11,3 +11,7 @@
 - [x] Deliver clean source archive and React Native adaptation guide.
 - [x] Soften mobile presentation and touch controls, remove redundant login CTAs and improve real empty states without mock data.
 - [x] Apply the approved softer presentation to the website as well.
+
+# Banner and feed finishing
+- [x] Replace the main cover and apply the uploaded refinements to the empty feed, tabs and mobile navigation clearance.
+- [x] Verify the cover and content on desktop and mobile.
