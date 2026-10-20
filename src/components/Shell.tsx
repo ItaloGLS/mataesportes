@@ -2,7 +2,7 @@ import { Link, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { motion } from "motion/react";
 import type { ReactNode } from "react";
-import { Home, CalendarDays, Search, User, LogOut } from "lucide-react";
+import { Home, CalendarDays, Search, User, LogOut, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useSession } from "@/lib/store";
 import { supabase } from "@/integrations/supabase/client";
@@ -49,20 +49,18 @@ export function Shell({ children }: { children: ReactNode }) {
             ))}
           </nav>
           <div className="flex items-center justify-end gap-3">
-            {user ? <><Link to="/perfil/$id" params={{ id: user.id }} aria-label="Meu perfil"><span className="grid h-9 w-9 place-items-center rounded-full bg-secondary text-secondary-foreground ring-1 ring-border"><User className="h-4 w-4" /></span></Link><Button variant="ghost" size="icon" aria-label="Sair da conta" title="Sair da conta" onClick={async()=>{await queryClient.cancelQueries();queryClient.clear();await supabase.auth.signOut();await navigate({to:'/auth',replace:true});}}><LogOut /></Button></> : <Button asChild disabled={!ready} variant="outline"><Link to="/auth">Entrar</Link></Button>}
+            {user ? <><Link to="/perfil/$id" params={{ id: user.id }} aria-label="Meu perfil"><span className="grid h-11 w-11 place-items-center rounded-full bg-secondary text-secondary-foreground ring-1 ring-border"><User className="h-4 w-4" /></span></Link><Button variant="ghost" size="icon" className="h-11 w-11" aria-label="Sair da conta" title="Sair da conta" onClick={async()=>{await queryClient.cancelQueries();queryClient.clear();await supabase.auth.signOut();await navigate({to:'/auth',replace:true});}}><LogOut /></Button></> : <Button className="hidden md:inline-flex" asChild disabled={!ready} variant="outline"><Link to="/auth">Entrar</Link></Button>}
           </div>
         </div>
       </header>
 
       <main className="mx-auto max-w-6xl pb-24 md:pb-10">{children}</main>
 
-      <nav className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-4 border-t bg-card/95 backdrop-blur md:hidden">
-        {NAV.map((n) => (
-            <Link key={n.to} to={n.to} activeOptions={{ exact: n.to === "/" }} className="flex flex-col items-center gap-1 py-2 text-xs font-bold text-muted-foreground" activeProps={{ className: "text-foreground bg-accent/20" }}>
-            <n.icon className="h-5 w-5" /> {n.label}
-          </Link>
-        ))}
-        {user ? <Link to="/perfil/$id" params={{ id: user.id }} className="flex flex-col items-center gap-1 py-2 text-xs font-bold text-muted-foreground" activeProps={{ className: "text-foreground bg-accent/20" }}><User className="h-5 w-5" /> Perfil</Link> : <Link to="/auth" className="flex flex-col items-center gap-1 py-2 text-xs font-bold text-muted-foreground"><User className="h-5 w-5" /> Entrar</Link>}
+      <nav aria-label="Navegação do celular" className="mobile-bottom-nav fixed inset-x-3 bottom-3 z-30 grid grid-cols-5 items-center rounded-touch bg-card/95 p-2 backdrop-blur md:hidden">
+        {NAV.slice(0,2).map((n) => <Link key={n.to} to={n.to} activeOptions={{exact:n.to==='/'}} className="flex min-h-12 flex-col items-center gap-1 text-[10px] font-semibold text-muted-foreground">{({isActive})=><><span className={`grid h-7 w-10 place-items-center rounded-full ${isActive?'bg-secondary text-foreground':''}`}><n.icon className="h-5 w-5" strokeWidth={isActive?2.5:2}/></span>{n.label}</>}</Link>)}
+        <Button size="icon" className="h-12 w-12 justify-self-center rounded-full bg-accent text-accent-foreground shadow-none hover:bg-accent/80" aria-label="Novo registro" title="Novo registro" onClick={async()=>{if(!user){await navigate({to:'/auth'});return;}await navigate({to:'/',search:{publicar:true}});}}><Plus className="h-6 w-6" /></Button>
+        <Link to="/buscar" className="flex min-h-12 flex-col items-center gap-1 text-[10px] font-semibold text-muted-foreground">{({isActive})=><><span className={`grid h-7 w-10 place-items-center rounded-full ${isActive?'bg-secondary text-foreground':''}`}><Search className="h-5 w-5" strokeWidth={isActive?2.5:2}/></span>Buscar</>}</Link>
+        {user ? <Link to="/perfil/$id" params={{ id: user.id }} className="flex min-h-12 flex-col items-center gap-1 text-[10px] font-semibold text-muted-foreground">{({isActive})=><><span className={`grid h-7 w-10 place-items-center rounded-full ${isActive?'bg-secondary text-foreground':''}`}><User className="h-5 w-5" /></span>Perfil</>}</Link> : <span aria-label="Perfil indisponível sem conta" className="flex min-h-12 flex-col items-center gap-1 text-[10px] font-semibold text-muted-foreground"><span className="grid h-7 w-10 place-items-center"><User className="h-5 w-5" /></span>Perfil</span>}
       </nav>
     </div>
   );
