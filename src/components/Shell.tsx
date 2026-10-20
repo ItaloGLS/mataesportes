@@ -4,6 +4,7 @@ import { motion } from "motion/react";
 import type { ReactNode } from "react";
 import { Home, CalendarDays, Search, User, LogOut, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useSession } from "@/lib/store";
 import { supabase } from "@/integrations/supabase/client";
 
