@@ -1,5 +1,6 @@
 import { describe,it,expect } from 'vitest';
-import { actionSchema,eventSchema,validateImage,MAX_IMAGE_BYTES } from './schemas';
+import { actionSchema,eventSchema,opportunitySchema,validateImage,MAX_IMAGE_BYTES } from './schemas';
+const opportunity={tipo:'Bolsa',titulo:'Bolsa-atleta municipal',organizacao:'Prefeitura de Palmares',descricao:'',cidade:'Palmares',modalidade:'',link:'',prazo:''};
 const event={nome:'Corrida real',modalidade:'Corrida',cidade:'Palmares',data:'2027-01-01',local:'Centro',vagas:1,valor:'Gratuito',descricao:'',categorias:[]};
 describe('Sports input rules',()=>{
  it('requires at least one event place',()=>{expect(eventSchema.safeParse({...event,vagas:0}).success).toBe(false);expect(eventSchema.safeParse(event).success).toBe(true);});
