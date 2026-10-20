@@ -4,7 +4,7 @@ import hero from "@/assets/hero.jpg";
 import { motion, AnimatePresence } from "motion/react";
 import { Shell, FadeIn } from "@/components/Shell";
 import { Button } from "@/components/ui/button";
-import { ArrowUpRight, Send, Plus, X, Flag } from "lucide-react";
+import { ArrowUpRight, Send, Plus, X, Flag, CalendarDays } from "lucide-react";
 import { PostCard } from "@/components/PostCard";
 import { EventoCard } from "@/components/EventoCard";
 import { useStore, uploadImage } from "@/lib/store";
@@ -79,7 +79,7 @@ function Feed() {
             <Link to="/eventos" className="flex items-center gap-1 text-xs font-semibold text-foreground">Ver todas<ArrowUpRight className="h-4 w-4" /></Link>
           </div>
           {eventos.slice(0, 2).map((e, i) => <FadeIn key={e.id} i={i + 2}><EventoCard e={e} /></FadeIn>)}
-          {!eventos.length && <p className="py-6 text-sm text-muted-foreground">Nenhum evento publicado.</p>}
+          {!eventos.length && <div className="mt-4"><EmptyState icon={CalendarDays} title="Nenhum evento na agenda ainda." action={user ? <Button variant="outline" className="touch-control" asChild><Link to="/eventos">Criar evento<ArrowUpRight /></Link></Button> : undefined} /></div>}
         </aside>
       </div>
     </Shell>
