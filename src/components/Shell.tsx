@@ -1,10 +1,11 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
+import { useQueryClient } from "@tanstack/react-query";
 import { motion } from "motion/react";
 import type { ReactNode } from "react";
-import { Home, CalendarDays, Search, User } from "lucide-react";
+import { Home, CalendarDays, Search, User, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { ME, useStore } from "@/lib/store";
-import { userById } from "@/lib/data";
+import { useSession } from "@/lib/store";
+import { supabase } from "@/integrations/supabase/client";
 
 const NAV = [
   { to: "/", label: "Feed", icon: Home },
@@ -26,8 +27,9 @@ export function Logo() {
 }
 
 export function Shell({ children }: { children: ReactNode }) {
-  const me = userById(ME);
-  const { inscricoes } = useStore();
+  const { user, ready } = useSession();
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
   return (
     <div className="min-h-screen">
       <header className="sticky top-0 z-30 bg-background/55 backdrop-blur-md">
@@ -47,14 +49,7 @@ export function Shell({ children }: { children: ReactNode }) {
             ))}
           </nav>
           <div className="flex items-center justify-end gap-3">
-            {inscricoes.size > 0 && (
-              <motion.span initial={{ scale: 0 }} animate={{ scale: 1 }} className="hidden rounded-full bg-highlight/10 px-3 py-1 text-xs font-bold text-highlight sm:inline">
-                {inscricoes.size} inscrição{inscricoes.size > 1 ? "ões" : ""}
-              </motion.span>
-            )}
-            <Link to="/perfil/$id" params={{ id: ME }} aria-label="Meu perfil">
-              <span className="grid h-9 w-9 place-items-center rounded-full bg-secondary font-display text-sm font-bold text-secondary-foreground ring-1 ring-border transition hover:scale-110">{me?.iniciais ?? "ME"}</span>
-            </Link>
+            {user ? <><Link to="/perfil/$id" params={{ id: user.id }} aria-label="Meu perfil"><span className="grid h-9 w-9 place-items-center rounded-full bg-secondary text-secondary-foreground ring-1 ring-border"><User className="h-4 w-4" /></span></Link><Button variant="ghost" size="icon" aria-label="Sair da conta" title="Sair da conta" onClick={async()=>{await queryClient.cancelQueries();queryClient.clear();await supabase.auth.signOut();await navigate({to:'/auth',replace:true});}}><LogOut /></Button></> : <Button asChild disabled={!ready} variant="outline"><Link to="/auth">Entrar</Link></Button>}
           </div>
         </div>
       </header>
@@ -67,18 +62,16 @@ export function Shell({ children }: { children: ReactNode }) {
             <n.icon className="h-5 w-5" /> {n.label}
           </Link>
         ))}
-        <Link to="/perfil/$id" params={{ id: ME }} className="flex flex-col items-center gap-1 py-2 text-xs font-bold text-muted-foreground" activeProps={{ className: "text-foreground bg-accent/20" }}>
-          <User className="h-5 w-5" /> Perfil
-        </Link>
+        {user ? <Link to="/perfil/$id" params={{ id: user.id }} className="flex flex-col items-center gap-1 py-2 text-xs font-bold text-muted-foreground" activeProps={{ className: "text-foreground bg-accent/20" }}><User className="h-5 w-5" /> Perfil</Link> : <Link to="/auth" className="flex flex-col items-center gap-1 py-2 text-xs font-bold text-muted-foreground"><User className="h-5 w-5" /> Entrar</Link>}
       </nav>
     </div>
   );
 }
 
-export function Avatar({ iniciais, size = "md" }: { iniciais: string; size?: "md" | "lg" }) {
+export function Avatar({ iniciais, size = "md", src }: { iniciais: string; size?: "md" | "lg"; src?: string }) {
   return (
     <span className={`grid shrink-0 place-items-center rounded-full bg-secondary font-display font-bold text-secondary-foreground ring-1 ring-border ${size === "lg" ? "h-24 w-24 text-3xl ring-4 ring-card" : "h-11 w-11 text-lg"}`}>
-      {iniciais}
+      {src ? <img src={src} alt="" className="h-full w-full rounded-full object-cover" /> : iniciais}
     </span>
   );
 }
