@@ -42,7 +42,7 @@ export async function uploadImage(file:File,userId:string){
  if(error)throw new Error('Não foi possível enviar a imagem.');
  return path;
 }
-export function useStore(){
+export function useStore(postId?:string){
  const {data}=useSuspenseQuery(platformQuery);const {user,ready}=useSession();const qc=useQueryClient();
  const server=useServerFn(mutatePlatform);
  const mutation=useMutation({
@@ -82,7 +82,7 @@ export function useStore(){
  });
  const socialPending=useIsMutating({mutationKey:['platform-action'],predicate:m=>{
   const action=m.state.variables as Action | undefined;
-  return (action?.kind==='like' || action?.kind==='comment.create') && action.id===mutation.variables?.id;
+  return (action?.kind==='like' || action?.kind==='comment.create') && action.id===postId;
  }});
  const personal=useQuery({queryKey:['inscricoes',user?.id],enabled:ready && Boolean(user),queryFn:async()=>{const rows:{evento_id:string}[]=[];for(let start=0;;start+=500){const {data,error}=await supabase.from('inscricoes').select('evento_id').eq('user_id',user?.id??'').order('evento_id').range(start,start+499);if(error)throw error;rows.push(...(data??[]));if((data?.length??0)<500)return rows;}}});
  const act=async(action:Action)=>{if(!user){toast.info('Entre na sua conta para continuar.');return false;}await mutation.mutateAsync(action);return true;};
