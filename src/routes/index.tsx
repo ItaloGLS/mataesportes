@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import hero from "@/assets/hero.jpg";
+import hero from "@/assets/sports-cover.jpg";
 import { motion, AnimatePresence } from "motion/react";
 import { Shell, FadeIn } from "@/components/Shell";
 import { Button } from "@/components/ui/button";
@@ -49,16 +49,15 @@ function Feed() {
 
   return (
     <Shell>
-      <section className="relative overflow-hidden md:mx-8">
-        <motion.img initial={{ scale: 1.04 }} animate={{ scale: 1 }} transition={{ duration: 1.4, ease: "easeOut" }} src={hero} width={1600} height={800} fetchPriority="high" alt="Atletas em estrada da Mata Sul" className="h-48 w-full object-cover md:h-56" />
-        <div className="hero-fade absolute inset-0 flex flex-col justify-center p-6 text-primary-foreground md:p-10">
+      <section className="sports-cover relative mx-4 overflow-hidden rounded-[20px] bg-primary md:mx-8">
+        <motion.img initial={{ scale: 1.025 }} animate={{ scale: 1 }} transition={{ duration: 1.4, ease: "easeOut" }} src={hero} width={1536} height={768} fetchPriority="high" alt="Imagem ilustrativa de atletas treinando em uma pista" className="sports-cover-image h-64 w-full object-cover md:h-72" />
+        <div className="hero-fade absolute inset-0 flex flex-col justify-end p-5 text-primary-foreground md:justify-center md:p-8 lg:p-10">
           <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-xs font-bold uppercase tracking-widest text-accent">Mata Sul · Pernambuco</motion.p>
-          <motion.h1 initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="mt-3 max-w-lg font-display text-4xl font-extrabold uppercase leading-none md:text-6xl"><span className="md:hidden">Seu talento<br />merece ser visto</span><span className="hidden md:inline">Mata Esportes</span></motion.h1>
+          <motion.h1 initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="mt-2 max-w-sm font-display text-4xl font-extrabold uppercase leading-none md:text-5xl lg:text-6xl">Seu talento<br /><span className="text-accent">merece ser visto.</span></motion.h1>
         </div>
-        <div className="race-stripe absolute inset-x-0 bottom-0 hidden h-1.5 md:block" />
       </section>
 
-      <div className="grid gap-8 px-4 py-7 md:grid-cols-[minmax(0,1fr)_260px] md:px-8 lg:grid-cols-[minmax(0,1fr)_290px]">
+      <div className="grid gap-8 px-4 py-8 md:grid-cols-[minmax(0,1fr)_260px] md:px-8 lg:grid-cols-[minmax(0,1fr)_290px]">
         <div className="min-w-0">
           <div className="mobile-heading flex flex-wrap items-center justify-between gap-3 border-b-2 border-primary pb-4"><h2 className="text-3xl font-extrabold uppercase">Da nossa região</h2>{user ? <Button onClick={() => setComposerOpen(!composerOpen)} aria-expanded={composerOpen} className="touch-control rounded-sm bg-accent font-bold text-accent-foreground shadow-none hover:bg-accent/80">{composerOpen ? <X /> : <Plus />} {composerOpen ? "Fechar" : "Novo registro"}</Button> : null}</div>
           <AnimatePresence>{composerOpen && user && <motion.form initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden border-b bg-secondary/50" onSubmit={async (e) => { e.preventDefault(); if (!texto.trim() || !me) return; if (!me.cidade) { toast.info('Escolha sua cidade no perfil antes de publicar.'); return; } setUploading(true); try { const path = image ? await uploadImage(image,user.id) : null; const saved = await publicar({ texto: texto.trim(), tipo, modalidade: mod, cidade: me.cidade, image_path:path }); if(saved){setTexto("");setImage(null);void navigate({search:{}});setComposerOpen(false);} } catch { toast.error('Não foi possível publicar. Confira sua imagem e tente novamente.'); } finally { setUploading(false); } }}>
@@ -70,7 +69,7 @@ function Feed() {
             {[undefined, ...TIPOS].map((t) => <Button key={t ?? "tudo"} variant="ghost" aria-pressed={filtro === t} onClick={() => void navigate({search:t?{tipo:t}:{}})} className={`relative h-11 shrink-0 rounded-full px-4 text-xs font-semibold md:px-4 ${filtro === t ? "bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground" : "bg-secondary text-secondary-foreground"}`}>{t ? `${t}s` : "Tudo"}</Button>)}
           </div></div>
           <AnimatePresence mode="popLayout">{lista.map((p, i) => <FadeIn key={p.id} i={i}><PostCard post={p} /></FadeIn>)}</AnimatePresence>
-          {!lista.length && <div className="space-y-4 py-9"><div className="grid h-14 w-14 place-items-center rounded-touch bg-accent/20 text-foreground"><Plus className="h-7 w-7" /></div><h3 className="max-w-xs text-3xl font-bold">Seja o primeiro a mostrar seu treino</h3>{user ? <Button className="touch-control mobile-primary" onClick={()=>setComposerOpen(true)}>Publicar registro</Button> : <div className="md:hidden"><SignInPrompt /></div>}</div>}
+          {!lista.length && <div className="mt-5 flex flex-col items-start gap-4 rounded-touch bg-card p-6"><h3 className="max-w-xs font-sans text-lg font-semibold leading-snug">{filtro ? "Nenhum registro por aqui ainda." : "O próximo treino merece aparecer aqui."}</h3>{user ? <Button variant="outline" className="touch-control" onClick={()=>setComposerOpen(true)}>Publicar registro<ArrowUpRight /></Button> : <Button variant="outline" className="touch-control md:hidden" asChild><Link to="/auth">Entrar na conta<ArrowUpRight /></Link></Button>}</div>}
           {!user && lista.length>0 && <div className="py-5 md:hidden"><SignInPrompt /></div>}
         </div>
 
