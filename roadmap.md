@@ -8,6 +8,6 @@
 - [x] Approve plan for real accounts, full profiles and persistent sports/social data.
 - [x] Enable Lovable Cloud and replace demo-only data and interactions.
 - [x] Verify real authenticated flows, persistence and access controls.
-- [ ] Deliver clean source archive and React Native adaptation guide.
+- [x] Deliver clean source archive and React Native adaptation guide.
 - [x] Soften mobile presentation and touch controls, remove redundant login CTAs and improve real empty states without mock data.
 - [x] Apply the approved softer presentation to the website as well.
