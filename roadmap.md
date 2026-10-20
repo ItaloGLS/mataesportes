@@ -23,4 +23,4 @@
 # Opportunities and coach discovery
 - [x] Add opportunities section (editais, bolsas, processos seletivos) with real persistence and owner-only editing.
 - [x] Add quick profile-type filters to find coaches, athletes and scouts on the search page.
-- [ ] Verify opportunities page, publishing flow and coach search on desktop and mobile.
+- [x] Verify opportunities page, publishing flow and coach search on desktop and mobile.
