@@ -37,29 +37,29 @@
 
 :root {
   --radius: 1rem;
-  --background: oklch(0.975 0.012 110);
-  --foreground: oklch(0.22 0.04 155);
+  --background: oklch(0.975 0.004 260);
+  --foreground: oklch(0.18 0.02 265);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.22 0.04 155);
+  --card-foreground: oklch(0.18 0.02 265);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.22 0.04 155);
-  --primary: oklch(0.36 0.09 155);
-  --primary-foreground: oklch(0.98 0.02 110);
-  --secondary: oklch(0.93 0.04 120);
-  --secondary-foreground: oklch(0.3 0.07 155);
-  --muted: oklch(0.95 0.015 110);
-  --muted-foreground: oklch(0.5 0.03 150);
-  --accent: oklch(0.88 0.2 125);
-  --accent-foreground: oklch(0.25 0.06 150);
-  --highlight: oklch(0.7 0.18 50);
+  --popover-foreground: oklch(0.18 0.02 265);
+  --primary: oklch(0.17 0.02 265);
+  --primary-foreground: oklch(0.98 0 0);
+  --secondary: oklch(0.93 0.03 255);
+  --secondary-foreground: oklch(0.35 0.15 260);
+  --muted: oklch(0.95 0.006 260);
+  --muted-foreground: oklch(0.5 0.02 265);
+  --accent: oklch(0.62 0.22 258);
+  --accent-foreground: oklch(0.99 0 0);
+  --highlight: oklch(0.64 0.24 32);
   --highlight-foreground: oklch(0.99 0 0);
   --destructive: oklch(0.6 0.22 25);
   --destructive-foreground: oklch(0.99 0 0);
-  --border: oklch(0.9 0.02 120);
-  --input: oklch(0.9 0.02 120);
-  --ring: oklch(0.36 0.09 155);
-  --gradient-hero: linear-gradient(180deg, transparent 20%, oklch(0.2 0.06 155 / 0.92));
-  --shadow-card: 0 1px 2px oklch(0.3 0.05 155 / 0.06), 0 8px 24px -12px oklch(0.3 0.05 155 / 0.15);
+  --border: oklch(0.91 0.008 260);
+  --input: oklch(0.91 0.008 260);
+  --ring: oklch(0.62 0.22 258);
+  --gradient-hero: linear-gradient(180deg, transparent 20%, oklch(0.15 0.03 265 / 0.95));
+  --shadow-card: 0 1px 2px oklch(0.2 0.03 265 / 0.06), 0 8px 24px -12px oklch(0.2 0.03 265 / 0.15);
 }
 
 @layer base {
@@ -79,3 +79,9 @@
   box-shadow: var(--shadow-card);
 }
 @utility hero-fade { background: var(--gradient-hero); }
+
+@utility text-gradient-sport {
+  background: linear-gradient(90deg, var(--accent), var(--highlight));
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+@utility bg-gradient-sport { background: linear-gradient(120deg, var(--accent), var(--highlight)); }

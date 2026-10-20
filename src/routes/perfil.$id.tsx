@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { MapPin, Trophy, Timer, Medal } from "lucide-react";
-import { Shell, Avatar } from "@/components/Shell";
+import { motion } from "motion/react";
+import { Shell, Avatar, FadeIn } from "@/components/Shell";
 import { PostCard } from "@/components/PostCard";
 import { useStore, ME } from "@/lib/store";
 import { userById } from "@/lib/data";
@@ -33,7 +34,7 @@ function Perfil() {
     <Shell>
       <div className="space-y-5 px-4 py-6 md:px-8 md:py-8">
         <section className="card-surface overflow-hidden">
-          <div className="h-24 bg-primary" />
+          <div className="h-28 bg-gradient-sport" />
           <div className="-mt-12 flex flex-col gap-4 p-6 pt-0 sm:flex-row sm:items-end">
             <Avatar iniciais={u.iniciais} size="lg" />
             <div className="flex-1">
@@ -62,10 +63,10 @@ function Perfil() {
             <h2 className="flex items-center gap-2 text-lg font-bold"><Trophy className="h-5 w-5 text-highlight" /> Histórico de pódios</h2>
             <ul className="mt-4 space-y-3">
               {u.podios.map((p) => (
-                <li key={p.titulo} className="flex items-center gap-3">
+                <motion.li key={p.titulo} initial={{ opacity: 0, x: -12 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} className="flex items-center gap-3">
                   <span className={`grid h-9 w-9 shrink-0 place-items-center rounded-full font-display font-extrabold ${MEDALHA[p.posicao]}`}>{p.posicao}º</span>
                   <div><p className="font-semibold">{p.titulo}</p><p className="text-xs text-muted-foreground">{p.ano}</p></div>
-                </li>
+                </motion.li>
               ))}
               {!u.podios.length && <p className="text-sm text-muted-foreground">Sem pódios registrados.</p>}
             </ul>
@@ -84,7 +85,7 @@ function Perfil() {
         </div>
 
         <h2 className="flex items-center gap-2 text-lg font-bold"><Medal className="h-5 w-5 text-highlight" /> Publicações</h2>
-        <div className="space-y-4">{meus.map((p) => <PostCard key={p.id} post={p} />)}</div>
+        <div className="space-y-4">{meus.map((p, i) => <FadeIn key={p.id} i={i}><PostCard post={p} /></FadeIn>)}</div>
       </div>
     </Shell>
   );
