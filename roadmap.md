@@ -15,3 +15,7 @@
 # Banner and feed finishing
 - [x] Replace the main cover and apply the uploaded refinements to the empty feed, tabs and mobile navigation clearance.
 - [x] Verify the cover and content on desktop and mobile.
+
+# Regional palette refinement
+- [x] Apply the approved dark sugarcane green, warm yellow and straw palette with terracotta only on small seals.
+- [x] Restore the illustrative sugarcane-road cover and verify the feed and events presentation.
