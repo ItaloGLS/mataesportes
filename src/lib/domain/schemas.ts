@@ -4,7 +4,7 @@ const uuid = z.string().uuid();
 const cidade = z.string().refine(v => CIDADES.includes(v), 'Selecione uma cidade');
 const modalidade = z.string().refine(v => MODALIDADES.includes(v), 'Selecione uma modalidade');
 const text = (max: number) => z.string().trim().min(1,'Preencha o campo').max(max);
-export const postSchema = z.object({ texto: text(5000), tipo: z.enum(['Notícia','Conquista','Treino','Peneira']), modalidade, cidade, image_path: z.string().nullable().optional() });
+export const postSchema = z.object({ texto: text(5000), tipo: z.enum(['Notícia','Conquista','Treino','Peneira']), modalidade, cidade, image_path: z.string().nullable() });
 export const eventSchema = z.object({ nome: text(200).min(3), modalidade, cidade, data: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).refine(v => !Number.isNaN(Date.parse(v + 'T12:00:00')), 'Data inválida'), local: text(300), vagas: z.number().int().min(1).max(100000), valor: z.string().trim().max(100), descricao: z.string().trim().max(5000), categorias: z.array(text(100)).max(30) });
 export const profileSchema = z.object({ nome: text(100).min(2), atuacao: z.enum(['Atleta','Treinador','Olheiro']), cidade, modalidades: z.array(modalidade).max(8), bio: z.string().max(2000), avatar_path: z.string().nullable(), podios: z.array(z.object({ titulo: text(200), posicao: z.number().int().min(1).max(3), ano: z.number().int().min(1900).max(2200) })).max(100), marcas: z.array(z.object({ prova: text(100), valor: text(100) })).max(100) });
 export const actionSchema = z.discriminatedUnion('kind',[

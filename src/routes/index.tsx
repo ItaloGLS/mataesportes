@@ -17,7 +17,7 @@ export const Route = createFileRoute("/")({
   loader: async ({context}) => { await context.queryClient.ensureQueryData(platformQuery); },
   errorComponent: LoadError,
   notFoundComponent: Missing,
-  validateSearch: (s:Record<string,unknown>) => ({tipo: typeof s.tipo === 'string' ? s.tipo : undefined}),
+  validateSearch: (s:Record<string,unknown>) => { const tipo = typeof s['tipo'] === 'string' ? s['tipo'] : undefined; return tipo ? {tipo} : {}; },
   head: () => ({
     meta: [
       { title: "Mata Esportes — Rede social esportiva da Mata Sul de PE" },

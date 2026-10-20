@@ -49,7 +49,7 @@ export function useStore(){
  return {...data,user,me:data.users.find(u=>u.id===user?.id),ready,pending:mutation.isPending,liked,inscricoes:new Set(personal.data?.map(i=>i.evento_id)??[]),userById:(id:string)=>data.users.find(u=>u.id===id),act,
   toggleLike:(id:string)=>act({kind:'like',id,active:!liked.has(id)}),
   comentar:(id:string,texto:string)=>act({kind:'comment.create',id,texto}),
-  publicar:(p:Omit<Post,'id'|'autor'|'tempo'|'likes'|'comentarios'|'image_path'> & {image_path?:string|null})=>act({kind:'post.create',value:p}),
+  publicar:(p:Omit<Post,'id'|'autor'|'tempo'|'likes'|'comentarios'|'image_path'> & {image_path?:string|null})=>act({kind:'post.create',value:{...p,image_path:p.image_path??null}}),
   inscrever:(id:string)=>act({kind:'registration',id,active:!personal.data?.some(i=>i.evento_id===id)}),
   criarEvento:(e:Omit<Evento,'id'|'inscritos'|'organizador'>)=>act({kind:'event.create',value:e}),
  };

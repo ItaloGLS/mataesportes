@@ -68,7 +68,7 @@ export function Shell({ children }: { children: ReactNode }) {
   );
 }
 
-export function Avatar({ iniciais, size = "md", src }: { iniciais: string; size?: "md" | "lg"; src?: string }) {
+export function Avatar({ iniciais, size = "md", src }: { iniciais: string; size?: "md" | "lg"; src?: string | undefined }) {
   return (
     <span className={`grid shrink-0 place-items-center rounded-full bg-secondary font-display font-bold text-secondary-foreground ring-1 ring-border ${size === "lg" ? "h-24 w-24 text-3xl ring-4 ring-card" : "h-11 w-11 text-lg"}`}>
       {src ? <img src={src} alt="" className="h-full w-full rounded-full object-cover" /> : iniciais}
