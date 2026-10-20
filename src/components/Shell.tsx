@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useSession } from "@/lib/store";
 import { supabase } from "@/integrations/supabase/client";
+import logoMark from "@/assets/logo-mark.png";
 
 const NAV = [
   { to: "/", label: "Feed", icon: Home },
@@ -25,7 +26,7 @@ export function Logo() {
         className="h-9 w-auto rounded-sm bg-primary object-contain p-1"
       />
       <span className="font-logo text-2xl font-extrabold leading-none text-foreground sm:text-3xl">
-        MATA<span className="ml-1 text-accent">ESPORTES</span>
+        MATA<span className="ml-1">ESPORTES</span>
       </span>
     </Link>
   );
