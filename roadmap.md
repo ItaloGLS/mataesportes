@@ -7,7 +7,7 @@
 # Real backend and source handoff
 - [x] Approve plan for real accounts, full profiles and persistent sports/social data.
 - [x] Enable Lovable Cloud and replace demo-only data and interactions.
-- [ ] Verify real authenticated flows, persistence and access controls.
+- [x] Verify real authenticated flows, persistence and access controls.
 - [ ] Deliver clean source archive and React Native adaptation guide.
-- [ ] Soften mobile presentation and touch controls, remove redundant login CTAs and improve real empty states without mock data.
-- [ ] Apply the approved softer presentation to the website as well.
+- [x] Soften mobile presentation and touch controls, remove redundant login CTAs and improve real empty states without mock data.
+- [x] Apply the approved softer presentation to the website as well.
