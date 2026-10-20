@@ -1,0 +1,34 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1792512211139,
+      "tag": "0000_sports_platform",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1792512276559,
+      "tag": "0001_profile_atomic_save",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1792512490962,
+      "tag": "0002_restrict_trigger_execution",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1792512663120,
+      "tag": "0003_registration_privacy_grants",
+      "breakpoints": true
+    }
+  ]
+}

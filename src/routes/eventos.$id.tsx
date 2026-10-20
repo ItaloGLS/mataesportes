@@ -1,67 +1,22 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, CalendarDays, MapPin, Ticket, Users, Check } from "lucide-react";
-import { motion } from "motion/react";
-import { Shell, Avatar } from "@/components/Shell";
-import { useStore } from "@/lib/store";
-import { userById } from "@/lib/data";
-
-export const Route = createFileRoute("/eventos/$id")({
-  head: () => ({
-    meta: [
-      { title: "Detalhes do evento — Mata Esportes" },
-      { name: "description", content: "Informações da prova, categorias e inscrição." },
-      { property: "og:title", content: "Evento — Mata Esportes" },
-      { property: "og:description", content: "Detalhes e inscrição em competição da Mata Sul." },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
-    ],
-  }),
-  component: Detalhe,
-});
-
-function Detalhe() {
-  const { id } = Route.useParams();
-  const { eventos, inscricoes, inscrever } = useStore();
-  const e = eventos.find((x) => x.id === id);
-  if (!e) return <Shell><p className="p-8">Evento não encontrado.</p></Shell>;
-  const org = userById(e.organizador)!;
-  const inscrito = inscricoes.has(e.id);
-  const lotado = e.inscritos >= e.vagas;
-  const data = new Date(e.data + "T12:00:00").toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
-
-  return (
-    <Shell>
-      <div className="space-y-5 px-4 py-6 md:px-8 md:py-8">
-        <Link to="/eventos" className="inline-flex items-center gap-2 text-sm font-semibold text-muted-foreground"><ArrowLeft className="h-4 w-4" /> Eventos</Link>
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="rounded-3xl bg-primary p-6 text-primary-foreground md:p-8">
-          <p className="text-sm font-bold uppercase tracking-widest text-accent">{e.modalidade}</p>
-          <h1 className="mt-1 text-3xl font-extrabold md:text-4xl">{e.nome}</h1>
-          <div className="mt-5 grid gap-3 text-sm sm:grid-cols-2">
-            <p className="flex items-center gap-2 capitalize"><CalendarDays className="h-4 w-4 text-accent" /> {data}</p>
-            <p className="flex items-center gap-2"><MapPin className="h-4 w-4 text-accent" /> {e.local}, {e.cidade}</p>
-            <p className="flex items-center gap-2"><Ticket className="h-4 w-4 text-accent" /> {e.valor}</p>
-            <p className="flex items-center gap-2"><Users className="h-4 w-4 text-accent" /> {e.inscritos} de {e.vagas} vagas</p>
-          </div>
-        </motion.div>
-        <div className="grid gap-5 lg:grid-cols-[1fr_300px]">
-          <div className="card-surface space-y-4 p-6">
-            <h2 className="text-xl font-bold">Sobre a prova</h2>
-            <p className="leading-relaxed text-muted-foreground">{e.descricao}</p>
-            <h3 className="font-bold">Categorias</h3>
-            <div className="flex flex-wrap gap-2">{e.categorias.map((c) => <span key={c} className="rounded-full bg-secondary px-3 py-1 text-sm font-semibold text-secondary-foreground">{c}</span>)}</div>
-          </div>
-          <div className="space-y-4">
-            <motion.button whileTap={{ scale: 0.95 }} whileHover={{ scale: 1.02 }} disabled={inscrito || lotado} onClick={() => inscrever(e.id)}
-              className="flex w-full items-center justify-center gap-2 rounded-2xl bg-highlight py-4 text-lg font-bold text-highlight-foreground transition disabled:bg-accent disabled:text-accent-foreground">
-              {inscrito ? <><Check className="h-5 w-5" /> Inscrição confirmada</> : lotado ? "Vagas esgotadas" : "Inscrever-se"}
-            </motion.button>
-            <Link to="/perfil/$id" params={{ id: org.id }} className="card-surface flex items-center gap-3 p-4">
-              <Avatar iniciais={org.iniciais} />
-              <div><p className="text-xs text-muted-foreground">Organização</p><p className="font-bold">{org.nome}</p></div>
-            </Link>
-          </div>
-        </div>
-      </div>
-    </Shell>
-  );
+import { createFileRoute,Link } from '@tanstack/react-router';
+import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { CalendarDays,MapPin,Ticket,Users,Pencil,Trash2 } from 'lucide-react';
+import { Shell,Avatar } from '@/components/Shell';
+import { Button } from '@/components/ui/button';
+import { EventForm } from '@/components/EventForm';
+import { useStore } from '@/lib/store';
+import { supabase } from '@/integrations/supabase/client';
+import { platformQuery } from '@/lib/queries';
+import { metadata,LoadError,Missing,SignInPrompt } from '@/components/RouteStates';
+export const Route=createFileRoute('/eventos/$id')({loader:async({context})=>{await context.queryClient.ensureQueryData(platformQuery);},errorComponent:LoadError,notFoundComponent:Missing,head:()=>metadata('Detalhes do evento','Categorias, local, vagas e inscrição no evento esportivo.'),component:Detalhe});
+function Detalhe(){const {id}=Route.useParams();const navigate=Route.useNavigate();const {eventos,inscricoes,inscrever,userById,user,act,pending}=useStore();const [editing,setEditing]=useState(false);const [participantsOpen,setParticipantsOpen]=useState(false);const [message,setMessage]=useState('');const e=eventos.find(x=>x.id===id);const owner=Boolean(e && user?.id===e.organizador);
+ const participants=useQuery({queryKey:['participantes',id,user?.id],enabled:owner && participantsOpen,queryFn:async()=>{const rows:{user_id:string;created_at:string}[]=[];for(let start=0;;start+=500){const {data,error}=await supabase.from('inscricoes').select('user_id,created_at').eq('evento_id',id).order('created_at').range(start,start+499);if(error)throw error;rows.push(...(data??[]));if((data?.length??0)<500)return rows;}}});
+ if(!e)return <Shell><p className="p-8">Evento não encontrado.</p></Shell>;const org=userById(e.organizador);const registered=inscricoes.has(id);const closed=e.data<new Date().toLocaleDateString('en-CA');
+ return <Shell><div className="space-y-6 px-4 py-6 md:px-8"><Link to="/eventos" className="text-sm text-muted-foreground">← Eventos</Link><div className="flex items-start justify-between gap-3"><div><p className="text-xs font-bold uppercase text-muted-foreground">{e.modalidade}</p><h1 className="mt-1 text-4xl font-extrabold">{e.nome}</h1></div>{owner&&<div className="flex"><Button variant="ghost" size="icon" aria-label="Editar evento" title="Editar evento" onClick={()=>setEditing(!editing)}><Pencil/></Button><Button variant="ghost" size="icon" aria-label="Excluir evento" title="Excluir evento" disabled={pending} onClick={async()=>{if(!window.confirm('Excluir evento e suas inscrições?'))return;try{await act({kind:'event.delete',id});await navigate({to:'/eventos'});}catch{setMessage('Não foi possível excluir.');}}}><Trash2/></Button></div>}</div>
+ {editing&&<EventForm event={e} onDone={()=>setEditing(false)}/>}
+ <div className="grid gap-3 border-y py-5 text-sm sm:grid-cols-2"><p className="flex items-center gap-2"><CalendarDays className="h-4 w-4"/>{new Date(e.data+'T12:00:00').toLocaleDateString('pt-BR')}</p><p className="flex items-center gap-2"><MapPin className="h-4 w-4"/>{e.local}, {e.cidade}</p><p className="flex items-center gap-2"><Ticket className="h-4 w-4"/>{e.valor}</p><p className="flex items-center gap-2"><Users className="h-4 w-4"/>{e.inscritos} de {e.vagas} vagas</p></div>
+ <div className="grid gap-8 lg:grid-cols-[1fr_280px]"><div className="space-y-4"><h2 className="text-2xl font-bold">Sobre a prova</h2><p className="whitespace-pre-wrap leading-relaxed">{e.descricao||'Sem descrição adicional.'}</p>{e.categorias.length>0&&<><h3 className="text-xl font-bold">Categorias</h3><p>{e.categorias.join(' · ')}</p></>}</div><div className="space-y-4">{user?<Button className="w-full" variant={registered?'outline':'default'} disabled={pending||(!registered&&(closed||e.inscritos>=e.vagas))} onClick={async()=>{setMessage('');try{await inscrever(id);setMessage(registered?'Inscrição cancelada.':'Inscrição confirmada.');}catch{setMessage('Não foi possível inscrever: confira as vagas e a data do evento.');}}}>{pending?'Aguarde…':registered?'Cancelar inscrição':closed?'Evento encerrado':e.inscritos>=e.vagas?'Vagas esgotadas':'Inscrever-se'}</Button>:<SignInPrompt/>}{message&&<p role="status" className="text-sm">{message}</p>}{org&&<Link to="/perfil/$id" params={{id:org.id}} className="flex items-center gap-3 border-t pt-4"><Avatar iniciais={org.iniciais} src={org.avatarUrl}/><div><p className="text-xs text-muted-foreground">Organização</p><p className="font-bold">{org.nome}</p></div></Link>}</div></div>
+ {owner&&<section className="space-y-3 border-t pt-5"><Button variant="outline" onClick={()=>setParticipantsOpen(!participantsOpen)} aria-expanded={participantsOpen}>Participantes ({e.inscritos})</Button>{participantsOpen&&(participants.isPending?<p>Carregando participantes…</p>:participants.isError?<p role="alert">Não foi possível carregar participantes.</p>:<ul className="space-y-2">{participants.data?.map(p=><li key={p.user_id}><Link to="/perfil/$id" params={{id:p.user_id}}>{userById(p.user_id)?.nome??'Participante'}</Link></li>)}{!participants.data?.length&&<li>Nenhuma inscrição ainda.</li>}</ul>)}</section>}
+ </div></Shell>;
 }

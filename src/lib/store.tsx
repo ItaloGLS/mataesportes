@@ -1,44 +1,56 @@
-import { createContext, useContext, useState, type ReactNode } from "react";
-import { EVENTOS, POSTS, type Evento, type Post } from "./data";
+import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
+import { useQuery, useSuspenseQuery, useQueryClient, useMutation } from '@tanstack/react-query';
+import { useRouter } from '@tanstack/react-router';
+import { useServerFn } from '@tanstack/react-start';
+import type { User as AuthUser } from '@supabase/supabase-js';
+import { supabase } from '@/integrations/supabase/client';
+import { platformQuery } from './queries';
+import { mutatePlatform } from './platform.functions';
+import type { Action } from './domain/schemas';
+import { validateImage } from './domain/schemas';
+import type { Post, Evento } from './data';
+import { toast } from 'sonner';
 
-export const ME = "joao";
-
-interface Store {
-  posts: Post[]; eventos: Evento[]; liked: Set<string>; inscricoes: Set<string>;
-  toggleLike: (id: string) => void; comentar: (id: string, texto: string) => void;
-  publicar: (p: Omit<Post, "id" | "autor" | "tempo" | "likes" | "comentarios">) => void;
-  inscrever: (id: string) => void; criarEvento: (e: Omit<Evento, "id" | "inscritos" | "organizador">) => void;
+interface SessionState { user:AuthUser|null; ready:boolean }
+const SessionCtx=createContext<SessionState>({user:null,ready:false});
+export function SessionProvider({children}:{children:ReactNode}){
+ const [state,setState]=useState<SessionState>({user:null,ready:false});
+ const queryClient=useQueryClient(); const router=useRouter();
+ useEffect(()=>{
+  let alive=true; let revision=0;
+  const refresh=async()=>{const current=++revision;const {data}=await supabase.auth.getUser();if(alive && current===revision)setState({user:data.user,ready:true});};
+  void refresh();
+  const {data:{subscription}}=supabase.auth.onAuthStateChange(event=>{
+   if(event!=='SIGNED_IN' && event!=='SIGNED_OUT' && event!=='USER_UPDATED')return;
+   if(event==='SIGNED_OUT'){revision++;setState({user:null,ready:true});void queryClient.cancelQueries();queryClient.clear();}
+   else{queueMicrotask(()=>void refresh());void queryClient.invalidateQueries();}
+   void router.invalidate();
+  });
+  return()=>{alive=false;subscription.unsubscribe();};
+ },[queryClient,router]);
+ return <SessionCtx.Provider value={state}>{children}</SessionCtx.Provider>;
 }
-const Ctx = createContext<Store | null>(null);
-
-export function StoreProvider({ children }: { children: ReactNode }) {
-  const [posts, setPosts] = useState(POSTS);
-  const [eventos, setEventos] = useState(EVENTOS);
-  const [liked, setLiked] = useState<Set<string>>(new Set());
-  const [inscricoes, setInsc] = useState<Set<string>>(new Set());
-
-  const value: Store = {
-    posts, eventos, liked, inscricoes,
-    toggleLike: (id) => {
-      const has = liked.has(id);
-      const n = new Set(liked); has ? n.delete(id) : n.add(id); setLiked(n);
-      setPosts((ps) => ps.map((p) => (p.id === id ? { ...p, likes: p.likes + (has ? -1 : 1) } : p)));
-    },
-    comentar: (id, texto) =>
-      setPosts((ps) => ps.map((p) => (p.id === id ? { ...p, comentarios: [...p.comentarios, { autor: ME, texto }] } : p))),
-    publicar: (p) => setPosts((ps) => [{ ...p, id: crypto.randomUUID(), autor: ME, tempo: "agora", likes: 0, comentarios: [] }, ...ps]),
-    inscrever: (id) => {
-      if (inscricoes.has(id)) return;
-      setInsc(new Set(inscricoes).add(id));
-      setEventos((es) => es.map((e) => (e.id === id ? { ...e, inscritos: e.inscritos + 1 } : e)));
-    },
-    criarEvento: (e) => setEventos((es) => [{ ...e, id: crypto.randomUUID(), inscritos: 0, organizador: ME }, ...es]),
-  };
-  return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
+export const useSession=()=>useContext(SessionCtx);
+export async function uploadImage(file:File,userId:string){
+ validateImage(file);
+ const extension=file.type==='image/jpeg'?'jpg':file.type==='image/png'?'png':'webp';
+ const path=`${userId}/${crypto.randomUUID()}.${extension}`;
+ const {error}=await supabase.storage.from('sports-media').upload(path,file,{contentType:file.type,upsert:false});
+ if(error)throw new Error('Não foi possível enviar a imagem.');
+ return path;
 }
-
-export const useStore = () => {
-  const c = useContext(Ctx);
-  if (!c) throw new Error("StoreProvider ausente");
-  return c;
-};
+export function useStore(){
+ const {data}=useSuspenseQuery(platformQuery);const {user,ready}=useSession();const qc=useQueryClient();
+ const server=useServerFn(mutatePlatform);
+ const mutation=useMutation({mutationFn:(action:Action)=>server({data:action}),onSuccess:async()=>{await qc.invalidateQueries({queryKey:['platform'],refetchType:'none'});await qc.fetchQuery({...platformQuery,staleTime:0});await qc.invalidateQueries({queryKey:['inscricoes']});await qc.invalidateQueries({queryKey:['participantes']});},onError:()=>toast.error('Não foi possível salvar. Confira os dados e tente novamente.')});
+ const personal=useQuery({queryKey:['inscricoes',user?.id],enabled:ready && Boolean(user),queryFn:async()=>{const rows:{evento_id:string}[]=[];for(let start=0;;start+=500){const {data,error}=await supabase.from('inscricoes').select('evento_id').eq('user_id',user?.id??'').order('evento_id').range(start,start+499);if(error)throw error;rows.push(...(data??[]));if((data?.length??0)<500)return rows;}}});
+ const act=async(action:Action)=>{if(!user){toast.info('Entre na sua conta para continuar.');return false;}await mutation.mutateAsync(action);return true;};
+ const liked=new Set(data.likes.filter(l=>l.user_id===user?.id).map(l=>l.post_id));
+ return {...data,user,me:data.users.find(u=>u.id===user?.id),ready,pending:mutation.isPending,liked,inscricoes:new Set(personal.data?.map(i=>i.evento_id)??[]),userById:(id:string)=>data.users.find(u=>u.id===id),act,
+  toggleLike:(id:string)=>act({kind:'like',id,active:!liked.has(id)}),
+  comentar:(id:string,texto:string)=>act({kind:'comment.create',id,texto}),
+  publicar:(p:Omit<Post,'id'|'autor'|'tempo'|'likes'|'comentarios'|'image_path'> & {image_path?:string|null})=>act({kind:'post.create',value:{...p,image_path:p.image_path??null}}),
+  inscrever:(id:string)=>act({kind:'registration',id,active:!personal.data?.some(i=>i.evento_id===id)}),
+  criarEvento:(e:Omit<Evento,'id'|'inscritos'|'organizador'>)=>act({kind:'event.create',value:e}),
+ };
+}

@@ -5,8 +5,8 @@ import { formatData, type Evento } from "@/lib/data";
 export function EventoCard({ e }: { e: Evento }) {
   const [dia, mes] = formatData(e.data).split(" de ");
   return (
-    <Link to="/eventos/$id" params={{ id: e.id }} className="group flex items-start gap-3 border-b py-5 transition hover:bg-secondary/40">
-      <div className="flex w-14 shrink-0 flex-col items-center justify-center rounded-sm bg-primary py-3 text-primary-foreground">
+    <Link to="/eventos/$id" params={{ id: e.id }} className="mobile-event group flex items-start gap-3 border-b py-5 transition hover:bg-secondary/40">
+      <div className="mobile-date flex w-14 shrink-0 flex-col items-center justify-center rounded-sm bg-primary py-3 text-primary-foreground">
         <span className="font-display text-3xl font-extrabold leading-none text-accent">{dia}</span>
         <span className="text-xs uppercase">{mes?.replace(".", "")}</span>
       </div>
