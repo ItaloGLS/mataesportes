@@ -17,7 +17,7 @@ export function Logo() {
       <motion.span whileHover={{ rotate: -12, scale: 1.1 }} className="grid h-9 w-9 place-items-center rounded-xl bg-gradient-sport text-accent-foreground">
         <Zap className="h-5 w-5 fill-current" />
       </motion.span>
-      <span className="font-display text-xl font-extrabold italic leading-none tracking-tight text-foreground">
+      <span className="font-logo text-2xl leading-none tracking-widest text-foreground">
         MATA<span className="text-accent">ESPORTES</span>
       </span>
     </Link>
@@ -30,9 +30,9 @@ export function Shell({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-screen">
       <header className="sticky top-0 z-30 bg-background/55 backdrop-blur-md">
-        <div className="mx-auto flex h-16 max-w-6xl items-center gap-6 px-4 md:px-8">
+        <div className="mx-auto grid h-16 max-w-6xl grid-cols-[1fr_auto_1fr] items-center gap-4 px-4 md:px-8">
           <Logo />
-          <nav className="hidden items-center gap-1 md:flex">
+          <nav className="hidden items-center justify-center gap-1 md:flex">
             {NAV.map((n) => (
               <Link key={n.to} to={n.to} activeOptions={{ exact: n.to === "/" }}
                 className="relative rounded-full px-4 py-2 text-sm font-bold text-muted-foreground transition-colors hover:text-foreground">
@@ -45,7 +45,7 @@ export function Shell({ children }: { children: ReactNode }) {
               </Link>
             ))}
           </nav>
-          <div className="ml-auto flex items-center gap-3">
+          <div className="flex items-center justify-end gap-3">
             {inscricoes.size > 0 && (
               <motion.span initial={{ scale: 0 }} animate={{ scale: 1 }} className="hidden rounded-full bg-highlight/10 px-3 py-1 text-xs font-bold text-highlight sm:inline">
                 {inscricoes.size} inscrição{inscricoes.size > 1 ? "ões" : ""}
