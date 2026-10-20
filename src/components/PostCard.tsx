@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { motion, AnimatePresence } from "motion/react";
 import { Link } from "@tanstack/react-router";
 import { Heart, MessageCircle, MapPin, Send } from "lucide-react";
 import { userById, type Post } from "@/lib/data";
@@ -7,7 +8,7 @@ import { Avatar } from "./Shell";
 
 const TIPO_COR: Record<Post["tipo"], string> = {
   Peneira: "bg-highlight text-highlight-foreground",
-  Conquista: "bg-accent text-accent-foreground",
+  Conquista: "bg-gradient-sport text-accent-foreground",
   Treino: "bg-secondary text-secondary-foreground",
   Notícia: "bg-primary text-primary-foreground",
 };
@@ -34,14 +35,14 @@ export function PostCard({ post }: { post: Post }) {
       <p className="mt-3 text-xs font-semibold text-muted-foreground">#{post.modalidade.toLowerCase()}</p>
       <footer className="mt-4 flex gap-2 border-t pt-3">
         <button onClick={() => toggleLike(post.id)} className={`flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-semibold hover:bg-muted ${isLiked ? "text-highlight" : "text-muted-foreground"}`}>
-          <Heart className={`h-4 w-4 ${isLiked ? "fill-current" : ""}`} /> {post.likes}
+          <motion.span key={String(isLiked)} initial={{ scale: isLiked ? 0.4 : 1 }} animate={{ scale: 1 }} transition={{ type: "spring", stiffness: 500, damping: 12 }}><Heart className={`h-4 w-4 ${isLiked ? "fill-current" : ""}`} /></motion.span> {post.likes}
         </button>
         <button onClick={() => setOpen(!open)} className="flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-semibold text-muted-foreground hover:bg-muted">
           <MessageCircle className="h-4 w-4" /> {post.comentarios.length}
         </button>
       </footer>
-      {open && (
-        <div className="mt-3 space-y-3">
+      <AnimatePresence>{open && (
+        <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="mt-3 space-y-3 overflow-hidden">
           {post.comentarios.map((c, i) => {
             const u = userById(c.autor)!;
             return (
@@ -54,8 +55,8 @@ export function PostCard({ post }: { post: Post }) {
             <input value={txt} onChange={(e) => setTxt(e.target.value)} placeholder="Escreva um comentário…" className="flex-1 rounded-xl border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring" />
             <button aria-label="Enviar" className="rounded-xl bg-primary px-3 text-primary-foreground"><Send className="h-4 w-4" /></button>
           </form>
-        </div>
-      )}
+        </motion.div>
+      )}</AnimatePresence>
     </article>
   );
 }

@@ -1,7 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import hero from "@/assets/hero.jpg";
-import { Shell, Chip, Avatar } from "@/components/Shell";
+import { motion, AnimatePresence } from "motion/react";
+import { Shell, Chip, Avatar, FadeIn } from "@/components/Shell";
 import { PostCard } from "@/components/PostCard";
 import { EventoCard } from "@/components/EventoCard";
 import { useStore, ME } from "@/lib/store";
@@ -33,10 +34,10 @@ function Feed() {
   return (
     <Shell>
       <section className="relative mx-4 mt-4 overflow-hidden rounded-3xl md:mx-8 md:mt-8">
-        <img src={hero} alt="Atletas em estrada entre canaviais da Mata Sul" className="h-56 w-full object-cover md:h-72" />
+        <motion.img initial={{ scale: 1.12 }} animate={{ scale: 1 }} transition={{ duration: 1.4, ease: "easeOut" }} src={hero} width={1600} height={800} fetchPriority="high" alt="Atletas em estrada da Mata Sul" className="h-56 w-full object-cover md:h-72" />
         <div className="hero-fade absolute inset-0 flex flex-col justify-end p-6 text-primary-foreground">
-          <p className="text-sm font-bold uppercase tracking-widest text-accent">Mata Sul · Pernambuco</p>
-          <h1 className="max-w-lg text-3xl font-extrabold md:text-4xl">Seu talento merece ser visto.</h1>
+          <motion.p initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 }} className="text-sm font-bold uppercase tracking-widest text-highlight">Mata Sul · Pernambuco</motion.p>
+          <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }} className="max-w-lg text-3xl font-extrabold uppercase italic md:text-5xl">Seu talento <span className="text-gradient-sport">merece</span> ser visto.</motion.h1>
         </div>
       </section>
 
@@ -52,7 +53,7 @@ function Feed() {
               <select value={mod} onChange={(e) => setMod(e.target.value)} className="rounded-full border bg-card px-3 py-1.5 text-sm font-semibold">
                 {MODALIDADES.map((m) => <option key={m}>{m}</option>)}
               </select>
-              <button className="ml-auto rounded-full bg-highlight px-5 py-2 text-sm font-bold text-highlight-foreground">Publicar</button>
+              <button className="ml-auto rounded-full bg-gradient-sport transition hover:scale-105 active:scale-95 px-5 py-2 text-sm font-bold text-accent-foreground">Publicar</button>
             </div>
           </form>
 
@@ -60,7 +61,7 @@ function Feed() {
             <Chip active={!filtro} onClick={() => setFiltro(null)}>Tudo</Chip>
             {TIPOS.map((t) => <Chip key={t} active={filtro === t} onClick={() => setFiltro(t)}>{t}s</Chip>)}
           </div>
-          {lista.map((p) => <PostCard key={p.id} post={p} />)}
+          <AnimatePresence mode="popLayout">{lista.map((p, i) => <FadeIn key={p.id} i={i}><PostCard post={p} /></FadeIn>)}</AnimatePresence>
         </div>
 
         <aside className="space-y-4">
@@ -68,7 +69,7 @@ function Feed() {
             <h2 className="text-lg font-bold">Próximas provas</h2>
             <Link to="/eventos" className="text-sm font-semibold text-highlight">Ver todas</Link>
           </div>
-          {eventos.slice(0, 3).map((e) => <EventoCard key={e.id} e={e} />)}
+          {eventos.slice(0, 3).map((e, i) => <FadeIn key={e.id} i={i + 2}><EventoCard e={e} /></FadeIn>)}
           <div className="card-surface p-4">
             <h3 className="font-bold">Cidades ativas</h3>
             <div className="mt-3 flex flex-wrap gap-1.5">

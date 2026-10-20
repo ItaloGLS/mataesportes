@@ -1,7 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { Search, MapPin } from "lucide-react";
-import { Shell, Chip, Avatar } from "@/components/Shell";
+import { AnimatePresence } from "motion/react";
+import { Shell, Chip, Avatar, FadeIn } from "@/components/Shell";
 import { EventoCard } from "@/components/EventoCard";
 import { useStore } from "@/lib/store";
 import { CIDADES, MODALIDADES, USERS, type Role } from "@/lib/data";
@@ -46,19 +47,19 @@ function Buscar() {
 
         <h2 className="pt-2 text-xl font-bold">Pessoas <span className="text-muted-foreground">({pessoas.length})</span></h2>
         <div className="grid gap-3 md:grid-cols-2">
-          {pessoas.map((u) => (
-            <Link key={u.id} to="/perfil/$id" params={{ id: u.id }} className="card-surface flex items-center gap-3 p-4 transition hover:-translate-y-0.5">
+          <AnimatePresence mode="popLayout">{pessoas.map((u, i) => (
+            <FadeIn key={u.id} i={i}><Link to="/perfil/$id" params={{ id: u.id }} className="card-surface flex items-center gap-3 p-4 transition hover:-translate-y-0.5">
               <Avatar iniciais={u.iniciais} />
               <div className="min-w-0">
                 <p className="font-bold">{u.nome}</p>
                 <p className="flex items-center gap-1 text-sm text-muted-foreground">{u.role} · <MapPin className="h-3 w-3" />{u.cidade}</p>
                 <p className="text-xs font-semibold text-highlight">{u.modalidades.join(" · ")}</p>
               </div>
-            </Link>
-          ))}
+            </Link></FadeIn>
+          ))}</AnimatePresence>
         </div>
         <h2 className="pt-2 text-xl font-bold">Eventos <span className="text-muted-foreground">({evs.length})</span></h2>
-        <div className="grid gap-3 md:grid-cols-2">{evs.map((e) => <EventoCard key={e.id} e={e} />)}</div>
+        <div className="grid gap-3 md:grid-cols-2"><AnimatePresence mode="popLayout">{evs.map((e, i) => <FadeIn key={e.id} i={i}><EventoCard e={e} /></FadeIn>)}</AnimatePresence></div>
       </div>
     </Shell>
   );

@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Plus, X } from "lucide-react";
-import { Shell, Chip } from "@/components/Shell";
+import { AnimatePresence, motion } from "motion/react";
+import { Shell, Chip, FadeIn } from "@/components/Shell";
 import { EventoCard } from "@/components/EventoCard";
 import { useStore } from "@/lib/store";
 import { CIDADES, MODALIDADES } from "@/lib/data";
@@ -40,7 +41,7 @@ function Eventos() {
         </div>
 
         {form && (
-          <form className="card-surface grid gap-3 p-5 md:grid-cols-2" onSubmit={(ev) => {
+          <motion.form initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} className="card-surface grid overflow-hidden gap-3 p-5 md:grid-cols-2" onSubmit={(ev) => {
             ev.preventDefault();
             const f = new FormData(ev.currentTarget);
             criarEvento({
@@ -61,7 +62,7 @@ function Eventos() {
             <input name="categorias" placeholder="Categorias separadas por vírgula" className={`${input} md:col-span-2`} />
             <textarea name="descricao" rows={3} placeholder="Detalhes da prova" className={`${input} md:col-span-2`} />
             <button className="rounded-full bg-highlight py-2.5 font-bold text-highlight-foreground md:col-span-2">Publicar evento</button>
-          </form>
+          </motion.form>
         )}
 
         <div className="flex gap-2 overflow-x-auto pb-1">
@@ -69,7 +70,7 @@ function Eventos() {
           {MODALIDADES.map((m) => <Chip key={m} active={mod === m} onClick={() => setMod(m)}>{m}</Chip>)}
         </div>
         <div className="grid gap-4 md:grid-cols-2">
-          {lista.map((e) => <EventoCard key={e.id} e={e} />)}
+          <AnimatePresence mode="popLayout">{lista.map((e, i) => <FadeIn key={e.id} i={i}><EventoCard e={e} /></FadeIn>)}</AnimatePresence>
         </div>
         {!lista.length && <p className="py-10 text-center text-muted-foreground">Nenhum evento nessa modalidade ainda. Que tal criar um?</p>}
       </div>
