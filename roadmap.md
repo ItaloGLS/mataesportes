@@ -24,3 +24,7 @@
 - [x] Add opportunities section (editais, bolsas, processos seletivos) with real persistence and owner-only editing.
 - [x] Add quick profile-type filters to find coaches, athletes and scouts on the search page.
 - [x] Verify opportunities page, publishing flow and coach search on desktop and mobile.
+
+# First-navigation performance
+- [x] Anticipate page loading through visible navigation links and intent-based link preloading without changing the presentation or data permissions.
+- [ ] Verify first-click navigation, preload timing and absence of duplicate platform requests.
