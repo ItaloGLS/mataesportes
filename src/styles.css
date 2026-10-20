@@ -65,7 +65,7 @@
   --border: oklch(0.89 0 0);
   --input: var(--border);
   --ring: var(--foreground);
-  --gradient-hero: linear-gradient(90deg, oklch(0.1776378 0 0 / 0.88), oklch(0.1776378 0 0 / 0.5) 38%, transparent 75%);
+  --gradient-hero: linear-gradient(90deg, oklch(0.1776378 0 0 / 0.92), oklch(0.1776378 0 0 / 0.55) 42%, transparent 78%);
   --gradient-hero-mobile: linear-gradient(0deg, oklch(0.1776378 0 0 / 0.95), oklch(0.1776378 0 0 / 0.25) 65%, transparent);
   --shadow-card: none;
   --shadow-mobile-nav: 0 6px 24px oklch(0.1776378 0 0 / 0.12);
