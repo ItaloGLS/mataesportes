@@ -228,6 +228,48 @@ export type Database = {
           },
         ]
       }
+      oportunidades: {
+        Row: {
+          autor: string
+          cidade: string
+          created_at: string
+          descricao: string
+          id: string
+          link: string
+          modalidade: string | null
+          organizacao: string
+          prazo: string | null
+          tipo: string
+          titulo: string
+        }
+        Insert: {
+          autor: string
+          cidade: string
+          created_at?: string
+          descricao?: string
+          id?: string
+          link?: string
+          modalidade?: string | null
+          organizacao: string
+          prazo?: string | null
+          tipo: string
+          titulo: string
+        }
+        Update: {
+          autor?: string
+          cidade?: string
+          created_at?: string
+          descricao?: string
+          id?: string
+          link?: string
+          modalidade?: string | null
+          organizacao?: string
+          prazo?: string | null
+          tipo?: string
+          titulo?: string
+        }
+        Relationships: []
+      }
       podios: {
         Row: {
           ano: number

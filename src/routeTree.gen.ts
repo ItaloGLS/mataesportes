@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as BuscarRouteImport } from './routes/buscar'
+import { Route as OportunidadesRouteImport } from './routes/oportunidades'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as EventosIndexRouteImport } from './routes/eventos.index'
 import { Route as EventosIdRouteImport } from './routes/eventos.$id'
@@ -30,6 +31,11 @@ const AuthRoute = AuthRouteImport.update({
 const BuscarRoute = BuscarRouteImport.update({
   id: '/buscar',
   path: '/buscar',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OportunidadesRoute = OportunidadesRouteImport.update({
+  id: '/oportunidades',
+  path: '/oportunidades',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
@@ -57,6 +63,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/buscar': typeof BuscarRoute
+  '/oportunidades': typeof OportunidadesRoute
   '/reset-password': typeof ResetPasswordRoute
   '/eventos/$id': typeof EventosIdRoute
   '/perfil/$id': typeof PerfilIdRoute
@@ -66,6 +73,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/buscar': typeof BuscarRoute
+  '/oportunidades': typeof OportunidadesRoute
   '/reset-password': typeof ResetPasswordRoute
   '/eventos/$id': typeof EventosIdRoute
   '/perfil/$id': typeof PerfilIdRoute
@@ -76,6 +84,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/buscar': typeof BuscarRoute
+  '/oportunidades': typeof OportunidadesRoute
   '/reset-password': typeof ResetPasswordRoute
   '/eventos/$id': typeof EventosIdRoute
   '/perfil/$id': typeof PerfilIdRoute
@@ -87,6 +96,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/buscar'
+    | '/oportunidades'
     | '/reset-password'
     | '/eventos/$id'
     | '/perfil/$id'
@@ -96,6 +106,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/buscar'
+    | '/oportunidades'
     | '/reset-password'
     | '/eventos/$id'
     | '/perfil/$id'
@@ -105,6 +116,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/buscar'
+    | '/oportunidades'
     | '/reset-password'
     | '/eventos/$id'
     | '/perfil/$id'
@@ -115,6 +127,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthRoute: typeof AuthRoute
   BuscarRoute: typeof BuscarRoute
+  OportunidadesRoute: typeof OportunidadesRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   EventosIdRoute: typeof EventosIdRoute
   PerfilIdRoute: typeof PerfilIdRoute
@@ -142,6 +155,13 @@ declare module '@tanstack/react-router' {
       path: '/buscar'
       fullPath: '/buscar'
       preLoaderRoute: typeof BuscarRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/oportunidades': {
+      id: '/oportunidades'
+      path: '/oportunidades'
+      fullPath: '/oportunidades'
+      preLoaderRoute: typeof OportunidadesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/reset-password': {
@@ -179,6 +199,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthRoute: AuthRoute,
   BuscarRoute: BuscarRoute,
+  OportunidadesRoute: OportunidadesRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   EventosIdRoute: EventosIdRoute,
   PerfilIdRoute: PerfilIdRoute,

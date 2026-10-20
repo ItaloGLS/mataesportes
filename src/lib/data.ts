@@ -15,5 +15,11 @@ export interface Evento {
   id: string; nome: string; modalidade: string; cidade: string; data: string; local: string;
   vagas: number; inscritos: number; valor: string; descricao: string; categorias: string[]; organizador: string;
 }
+export const TIPOS_OPORTUNIDADE = ["Edital", "Bolsa", "Processo seletivo"] as const;
+export type TipoOportunidade = (typeof TIPOS_OPORTUNIDADE)[number];
+export interface Oportunidade {
+  id: string; autor: string; tipo: TipoOportunidade; titulo: string; organizacao: string;
+  descricao: string; cidade: string; modalidade: string | null; link: string; prazo: string | null; created_at: string;
+}
 export const formatData = (iso: string) => new Date(iso + "T12:00:00").toLocaleDateString("pt-BR", { day: "2-digit", month: "short" });
 export const initials = (name: string) => name.trim().split(/\s+/).slice(0,2).map(s => s[0]).join('').toUpperCase();

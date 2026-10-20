@@ -29,6 +29,13 @@
       "when": 1792512663120,
       "tag": "0003_registration_privacy_grants",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1792531282683,
+      "tag": "0004_create_oportunidades",
+      "breakpoints": true
     }
   ]
 }
