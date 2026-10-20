@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { ArrowLeft, CalendarDays, Users, Pencil, Trash2, MoreVertical } from 'lucide-react';
+import { ArrowLeft, CalendarDays, Users, Trophy, Pencil, Trash2, MoreVertical } from 'lucide-react';
 import { Shell, Avatar } from '@/components/Shell';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
@@ -9,7 +9,7 @@ import { EventForm } from '@/components/EventForm';
 import { useStore } from '@/lib/store';
 import { supabase } from '@/integrations/supabase/client';
 import { platformQuery } from '@/lib/queries';
-import { formatData } from '@/lib/data';
+import { formatData, marcaLabel, participanteLabel } from '@/lib/data';
 import { metadata, LoadError, Missing, SignInPrompt, EmptyState } from '@/components/RouteStates';
 
 export const Route = createFileRoute('/eventos/$id')({
@@ -45,11 +45,13 @@ function Detalhe() {
   if (!e) return <Shell><p className="p-8">Evento não encontrado.</p></Shell>;
   const org = userById(e.organizador);
   const registered = inscricoes.has(id);
-  const closed = e.data < new Date().toLocaleDateString('en-CA');
+  const closed = e.encerrado || e.data < new Date().toLocaleDateString('en-CA');
+  const ranking = [...e.resultado].sort((a, b) => a.posicao - b.posicao);
   const [dia, mes] = formatData(e.data).split(' de ');
   const pct = e.vagas > 0 ? Math.min(100, Math.round((e.inscritos / e.vagas) * 100)) : 0;
   const dados = [
     { label: 'Data', valor: new Date(e.data + 'T12:00:00').toLocaleDateString('pt-BR') },
+    { label: 'Horário', valor: e.horario || 'A definir' },
     { label: 'Local', valor: `${e.local}, ${e.cidade}` },
     { label: 'Vagas', valor: String(e.vagas) },
     { label: 'Valor', valor: e.valor },
@@ -67,7 +69,7 @@ function Detalhe() {
               <span className="text-xs uppercase">{mes?.replace('.', '')}</span>
             </div>
             <div className="min-w-0 flex-1">
-              <span className="rounded-sm bg-primary px-2 py-1 text-[10px] font-bold uppercase text-primary-foreground">{e.modalidade}</span>
+              <div className="flex flex-wrap gap-2"><span className="rounded-sm bg-primary px-2 py-1 text-[10px] font-bold uppercase text-primary-foreground">{e.modalidade}</span>{closed ? <span className="rounded-sm bg-muted px-2 py-1 text-[10px] font-bold uppercase text-muted-foreground">Encerrado</span> : <span className="rounded-sm bg-seal px-2 py-1 text-[10px] font-bold uppercase text-seal-foreground">Inscrições abertas</span>}</div>
               <h1 className="mt-2 text-4xl font-extrabold uppercase leading-tight">{e.nome}</h1>
             </div>
             {owner && (
@@ -80,7 +82,7 @@ function Detalhe() {
               </DropdownMenu>
             )}
           </div>
-          <div className="mt-6 grid grid-cols-2 gap-4 md:grid-cols-4">
+          <div className="mt-6 grid grid-cols-2 gap-4 md:grid-cols-5">
             {dados.map((d) => (
               <div key={d.label}>
                 <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">{d.label}</p>
@@ -94,6 +96,25 @@ function Detalhe() {
 
         <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
           <div className="space-y-6">
+            {e.encerrado && (
+              <section className="rounded-[20px] bg-card p-6">
+                <h2 className="flex items-center gap-2 text-2xl font-bold uppercase"><Trophy className="h-5 w-5 text-accent" />Resultado final</h2>
+                {ranking.length ? (
+                  <ol className="mt-4 divide-y">
+                    <li className="grid grid-cols-[48px_1fr_auto] gap-3 pb-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground"><span>Pos.</span><span>{participanteLabel(e.modalidade)}</span><span>{marcaLabel(e.modalidade)}</span></li>
+                    {ranking.map((r, i) => (
+                      <li key={i} className="grid grid-cols-[48px_1fr_auto] items-center gap-3 py-3">
+                        <span className={`flex h-9 w-9 items-center justify-center rounded-sm font-display text-xl font-extrabold ${r.posicao === 1 ? 'bg-accent text-accent-foreground' : 'bg-secondary'}`}>{r.posicao}º</span>
+                        <span className="font-bold">{r.nome}</span>
+                        <span className="font-display text-xl font-bold">{r.marca || '—'}</span>
+                      </li>
+                    ))}
+                  </ol>
+                ) : (
+                  <div className="mt-4"><EmptyState icon={Trophy} title={owner ? 'Adicione as colocações em Editar.' : 'Resultado ainda não divulgado.'} action={owner ? <Button variant="outline" className="touch-control" onClick={() => setEditing(true)}>Lançar resultado</Button> : undefined} /></div>
+                )}
+              </section>
+            )}
             <section className="rounded-[20px] bg-card p-6">
               <h2 className="text-2xl font-bold uppercase">Sobre a prova</h2>
               {e.descricao ? (
