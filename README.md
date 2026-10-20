@@ -1,29 +1,19 @@
-# Welcome to your Lovable project
+# Mata Esportes
 
-This project was built with [Lovable](https://lovable.dev).
+Rede esportiva da Mata Sul de Pernambuco com dados reais e backend Lovable Cloud.
 
-## Build with Lovable
+## Desenvolvimento
 
-Open your project in the [Lovable editor](https://lovable.dev) and keep building.
+- Requisitos: Bun e Node compatível com Vite 8.
+- Copie `.env.example` para `.env` e preencha localmente a conexão do ambiente autorizado.
+- `bun install`
+- `bun run dev -- --host 0.0.0.0 --port 8080`
+- `bun run test`
 
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: connect the project to GitHub and every change made in Lovable is committed straight to your repository.
-- **Full ownership**: this code is yours. Push to your repository and your changes sync back into Lovable, ready for your next prompt.
+O site continua em React 19 e TanStack Start. Os dados não são mockados: uma instalação vazia começa sem posts e eventos.
 
-## Development
+## Continuidade e app
 
-Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
+Leia [docs/ANTIGRAVITY.md](docs/ANTIGRAVITY.md) para configuração fora do Lovable, contratos de dados, segurança, migrações e o prompt de continuidade para Claude Sonnet criar React Native sem quebrar o site.
 
-```sh
-git clone <this-repository-url>
-cd <repository-name>
-npm i
-npm run dev
-```
-
-## Built with
-
-- TanStack Start
-- TypeScript
-- React
-- Tailwind CSS
+A pasta `drizzle/migrations` contém apenas esquema e permissões, não contas ou dados pessoais. Credenciais administrativas e dados privados não são entregues.
