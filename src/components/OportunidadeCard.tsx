@@ -1,0 +1,54 @@
+import { Link } from '@tanstack/react-router';
+import { ExternalLink, MapPin, MoreVertical, Pencil, Trash2 } from 'lucide-react';
+import { Button } from './ui/button';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from './ui/dropdown-menu';
+import { useStore } from '@/lib/store';
+import { formatData, type Oportunidade } from '@/lib/data';
+
+const selo: Record<Oportunidade['tipo'], string> = {
+  'Edital': 'bg-primary text-accent',
+  'Bolsa': 'bg-accent text-accent-foreground',
+  'Processo seletivo': 'bg-secondary text-secondary-foreground',
+};
+
+export function OportunidadeCard({ o, onEdit }: { o: Oportunidade; onEdit?: (o: Oportunidade) => void }) {
+  const { user, userById, act } = useStore();
+  const autor = userById(o.autor);
+  const mine = user?.id === o.autor;
+  const encerrada = o.prazo ? Date.parse(o.prazo + 'T23:59:59') < Date.now() : false;
+  return (
+    <article className="flex flex-col gap-3 rounded-touch border bg-card p-5">
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex flex-wrap items-center gap-2">
+          <span className={`rounded-sm px-2.5 py-1 text-xs font-bold uppercase tracking-wide ${selo[o.tipo]}`}>{o.tipo}</span>
+          {encerrada && <span className="rounded-sm bg-muted px-2.5 py-1 text-xs font-bold uppercase tracking-wide text-muted-foreground">Encerrada</span>}
+        </div>
+        {mine && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" aria-label="Opções da oportunidade" className="h-8 w-8"><MoreVertical className="h-4 w-4" /></Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => onEdit?.(o)}><Pencil className="h-4 w-4" />Editar</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => void act({ kind: 'opportunity.delete', id: o.id })}><Trash2 className="h-4 w-4" />Excluir</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
+      </div>
+      <div>
+        <h3 className="font-display text-2xl font-bold leading-tight">{o.titulo}</h3>
+        <p className="mt-1 text-sm font-semibold text-muted-foreground">{o.organizacao}</p>
+      </div>
+      {o.descricao && <p className="whitespace-pre-line text-sm leading-relaxed">{o.descricao}</p>}
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground">
+        <span className="flex items-center gap-1"><MapPin className="h-4 w-4" />{o.cidade}</span>
+        {o.modalidade && <span>{o.modalidade}</span>}
+        {o.prazo && <span className="font-bold text-foreground">Prazo: {formatData(o.prazo)}</span>}
+      </div>
+      <div className="mt-auto flex items-center justify-between gap-3 pt-1">
+        {autor && <Link to="/perfil/$id" params={{ id: autor.id }} className="text-xs font-semibold text-muted-foreground hover:text-foreground">Publicado por {autor.nome}</Link>}
+        {o.link && <Button variant="outline" size="sm" asChild className="ml-auto"><a href={o.link} target="_blank" rel="noopener noreferrer">Saiba mais<ExternalLink className="h-4 w-4" /></a></Button>}
+      </div>
+    </article>
+  );
+}
