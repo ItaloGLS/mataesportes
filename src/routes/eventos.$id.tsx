@@ -12,6 +12,8 @@ export const Route = createFileRoute("/eventos/$id")({
       { name: "description", content: "Informações da prova, categorias e inscrição." },
       { property: "og:title", content: "Evento — Mata Esportes" },
       { property: "og:description", content: "Detalhes e inscrição em competição da Mata Sul." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: Detalhe,
@@ -32,7 +34,7 @@ function Detalhe() {
       <div className="space-y-5 px-4 py-6 md:px-8 md:py-8">
         <Link to="/eventos" className="inline-flex items-center gap-2 text-sm font-semibold text-muted-foreground"><ArrowLeft className="h-4 w-4" /> Eventos</Link>
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="rounded-3xl bg-primary p-6 text-primary-foreground md:p-8">
-          <p className="text-sm font-bold uppercase tracking-widest text-highlight">{e.modalidade}</p>
+          <p className="text-sm font-bold uppercase tracking-widest text-accent">{e.modalidade}</p>
           <h1 className="mt-1 text-3xl font-extrabold md:text-4xl">{e.nome}</h1>
           <div className="mt-5 grid gap-3 text-sm sm:grid-cols-2">
             <p className="flex items-center gap-2 capitalize"><CalendarDays className="h-4 w-4 text-accent" /> {data}</p>
