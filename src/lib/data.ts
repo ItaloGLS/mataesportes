@@ -14,7 +14,14 @@ export interface Post {
 export interface Evento {
   id: string; nome: string; modalidade: string; cidade: string; data: string; local: string;
   vagas: number; inscritos: number; valor: string; descricao: string; categorias: string[]; organizador: string;
+  horario: string; encerrado: boolean; resultado: ResultadoItem[];
 }
+export interface ResultadoItem { posicao: number; nome: string; marca: string }
+const EQUIPES = ["Futebol", "Futsal", "Vôlei"];
+const TEMPO = ["Corrida", "Ciclismo", "Natação", "Atletismo"];
+/** Label for the score column of a final result, depending on the sport. */
+export const marcaLabel = (modalidade: string) => EQUIPES.includes(modalidade) ? "Placar / pontos" : TEMPO.includes(modalidade) ? "Tempo / marca" : "Resultado";
+export const participanteLabel = (modalidade: string) => EQUIPES.includes(modalidade) ? "Equipe" : "Atleta";
 export const TIPOS_OPORTUNIDADE = ["Edital", "Bolsa", "Processo seletivo"] as const;
 export type TipoOportunidade = (typeof TIPOS_OPORTUNIDADE)[number];
 export interface Oportunidade {

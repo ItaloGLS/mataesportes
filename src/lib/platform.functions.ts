@@ -30,7 +30,7 @@ export const getPlatform = createServerFn({method:'GET'}).handler(async () => {
  const dateFormatter=new Intl.DateTimeFormat('pt-BR');
  const users:User[]=profiles.map(p=>({id:p.id,nome:p.nome,role:p.atuacao as User['role'],cidade:p.cidade,modalidades:p.modalidades,bio:p.bio,iniciais:initials(p.nome),avatar_path:p.avatar_path,avatarUrl:p.avatar_path?media[p.avatar_path]:undefined,podios:(podiumsByUser.get(p.id)??[]).map(x=>({titulo:x.titulo,posicao:x.posicao as 1|2|3,ano:x.ano})),marcas:(marksByUser.get(p.id)??[]).map(x=>({prova:x.prova,valor:x.valor}))}));
  const posts:Post[]=rawPosts.map(p=>({...p,tipo:p.tipo as Post['tipo'],tempo:dateFormatter.format(new Date(p.created_at)),imageUrl:p.image_path?media[p.image_path]:undefined,likes:likesByPost.get(p.id)?.length??0,comentarios:(commentsByPost.get(p.id)??[]).map(c=>({id:c.id,autor:c.autor,texto:c.texto}))}));
- const eventos:Evento[]=events.map(e=>({...e,inscritos:countsByEvent.get(e.id)??0}));
+ const eventos:Evento[]=events.map(e=>({...e,resultado:(Array.isArray(e.resultado)?e.resultado:[]) as unknown as Evento['resultado'],inscritos:countsByEvent.get(e.id)??0}));
  const oportunidades:Oportunidade[]=rawOpportunities.map(o=>({...o,tipo:o.tipo as Oportunidade['tipo']}));
  return {users,posts,eventos,likes,follows,oportunidades};
 });
