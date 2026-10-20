@@ -27,16 +27,16 @@ export function Logo() {
   );
 }
 
-export function Shell({ children }: { children: ReactNode }) {
+export function Shell({ children, bare }: { children: ReactNode; bare?: boolean }) {
   const { user, ready } = useSession();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   return (
     <div className="min-h-screen">
       <header className="sticky top-0 z-30 bg-background/55 backdrop-blur-md">
-        <div className="mx-auto grid h-20 max-w-6xl grid-cols-[1fr_auto] items-center gap-4 px-4 md:grid-cols-[1fr_auto_1fr] md:px-8">
+        <div className={bare ? "mx-auto flex h-20 max-w-6xl items-center px-4 md:px-8" : "mx-auto grid h-20 max-w-6xl grid-cols-[1fr_auto] items-center gap-4 px-4 md:grid-cols-[1fr_auto_1fr] md:px-8"}>
           <Logo />
-          <nav className="hidden items-center justify-center gap-1 md:flex">
+          {!bare && <nav className="hidden items-center justify-center gap-1 md:flex">
             {NAV.map((n) => (
               <Link key={n.to} to={n.to} activeOptions={{ exact: n.to === "/" }}
                 className="relative px-4 py-3 text-sm font-bold text-muted-foreground transition-colors hover:text-foreground">
@@ -48,21 +48,21 @@ export function Shell({ children }: { children: ReactNode }) {
                 )}
               </Link>
             ))}
-          </nav>
-          <div className="flex items-center justify-end gap-3">
+          </nav>}
+          {!bare && <div className="flex items-center justify-end gap-3">
             {user ? <DropdownMenu><DropdownMenuTrigger asChild><button aria-label="Menu da conta" className="grid h-11 w-11 cursor-pointer place-items-center rounded-full bg-secondary text-secondary-foreground ring-1 ring-border"><User className="h-4 w-4" /></button></DropdownMenuTrigger><DropdownMenuContent align="end"><DropdownMenuItem onClick={()=>void navigate({to:'/perfil/$id',params:{id:user.id}})}><User className="h-4 w-4" />Meu perfil</DropdownMenuItem><DropdownMenuItem onClick={async()=>{await queryClient.cancelQueries();queryClient.clear();await supabase.auth.signOut();await navigate({to:'/auth',replace:true});}}><LogOut className="h-4 w-4" />Sair</DropdownMenuItem></DropdownMenuContent></DropdownMenu> : <Button className="hidden md:inline-flex" asChild disabled={!ready} variant="outline"><Link to="/auth">Entrar</Link></Button>}
-          </div>
+          </div>}
         </div>
       </header>
 
-      <main className="mobile-scroll-space mx-auto max-w-6xl md:pb-10">{children}</main>
+      <main className={`mx-auto max-w-6xl md:pb-10 ${bare ? "" : "mobile-scroll-space"}`}>{children}</main>
 
-      <nav aria-label="Navegação do celular" className="mobile-bottom-nav fixed inset-x-3 bottom-3 z-30 grid grid-cols-5 items-center rounded-touch bg-card/95 p-2 backdrop-blur md:hidden">
+      {!bare && <nav aria-label="Navegação do celular" className="mobile-bottom-nav fixed inset-x-3 bottom-3 z-30 grid grid-cols-5 items-center rounded-touch bg-card/95 p-2 backdrop-blur md:hidden">
         {NAV.slice(0,2).map((n) => <Link key={n.to} to={n.to} activeOptions={{exact:n.to==='/'}} className="flex min-h-12 flex-col items-center gap-1 text-[10px] font-semibold text-muted-foreground">{({isActive})=><><span className={`grid h-7 w-10 place-items-center rounded-full ${isActive?'bg-secondary text-foreground':''}`}><n.icon className="h-5 w-5" strokeWidth={isActive?2.5:2}/></span>{n.label}</>}</Link>)}
         <Button size="icon" className="h-12 w-12 justify-self-center rounded-full bg-accent text-accent-foreground shadow-none hover:bg-accent/80" aria-label="Novo registro" title="Novo registro" onClick={async()=>{if(!user){await navigate({to:'/auth'});return;}await navigate({to:'/',search:{publicar:true}});}}><Plus className="h-6 w-6" /></Button>
         <Link to="/buscar" className="flex min-h-12 flex-col items-center gap-1 text-[10px] font-semibold text-muted-foreground">{({isActive})=><><span className={`grid h-7 w-10 place-items-center rounded-full ${isActive?'bg-secondary text-foreground':''}`}><Search className="h-5 w-5" strokeWidth={isActive?2.5:2}/></span>Buscar</>}</Link>
         {user ? <Link to="/perfil/$id" params={{ id: user.id }} className="flex min-h-12 flex-col items-center gap-1 text-[10px] font-semibold text-muted-foreground">{({isActive})=><><span className={`grid h-7 w-10 place-items-center rounded-full ${isActive?'bg-secondary text-foreground':''}`}><User className="h-5 w-5" /></span>Perfil</>}</Link> : <span aria-label="Perfil indisponível sem conta" className="flex min-h-12 flex-col items-center gap-1 text-[10px] font-semibold text-muted-foreground"><span className="grid h-7 w-10 place-items-center"><User className="h-5 w-5" /></span>Perfil</span>}
-      </nav>
+      </nav>}
     </div>
   );
 }
