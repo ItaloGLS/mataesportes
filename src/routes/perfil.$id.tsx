@@ -35,9 +35,9 @@ function Perfil() {
       <div className="space-y-7 px-4 py-6 md:px-8">
         <section className="space-y-5">
           <div className="h-24 rounded-sm bg-primary md:h-28" aria-hidden />
-          <div className="-mt-16 flex flex-wrap items-end gap-4 md:-mt-14">
-            <Avatar iniciais={u.iniciais} src={u.avatarUrl} size="lg" />
-            <div className="min-w-0 flex-1 pb-1">
+          <div className="flex flex-wrap items-start gap-4">
+            <div className="-mt-12 md:-mt-14"><Avatar iniciais={u.iniciais} src={u.avatarUrl} size="lg" /></div>
+            <div className="min-w-0 flex-1 pt-2">
               <h1 className="text-4xl font-extrabold">{u.nome}</h1>
               {dados && <p className="mt-1 font-display text-lg font-semibold uppercase tracking-wide text-muted-foreground">{dados}</p>}
             </div>
