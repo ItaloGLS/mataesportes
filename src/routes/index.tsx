@@ -4,13 +4,13 @@ import hero from "@/assets/hero.jpg";
 import { motion, AnimatePresence } from "motion/react";
 import { Shell, FadeIn } from "@/components/Shell";
 import { Button } from "@/components/ui/button";
-import { ArrowUpRight, Send, Plus, X } from "lucide-react";
+import { ArrowUpRight, Send, Plus, X, Flag } from "lucide-react";
 import { PostCard } from "@/components/PostCard";
 import { EventoCard } from "@/components/EventoCard";
 import { useStore, uploadImage } from "@/lib/store";
 import { MODALIDADES, type Post } from "@/lib/data";
 import { platformQuery } from "@/lib/queries";
-import { LoadError, Missing, SignInPrompt } from "@/components/RouteStates";
+import { LoadError, Missing, SignInPrompt, EmptyState } from "@/components/RouteStates";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/")({
@@ -53,7 +53,7 @@ function Feed() {
         <motion.img initial={{ scale: 1.025 }} animate={{ scale: 1 }} transition={{ duration: 1.4, ease: "easeOut" }} src={hero} width={1536} height={768} fetchPriority="high" alt="Imagem ilustrativa de ciclistas e corredores numa estrada entre canaviais, inspirada na Mata Sul de Pernambuco" className="sports-cover-image h-64 w-full object-cover md:h-72" />
         <div className="hero-fade absolute inset-0 flex flex-col justify-end p-5 text-primary-foreground md:justify-center md:p-8 lg:p-10">
           <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-xs font-bold uppercase tracking-widest text-accent">Mata Sul · Pernambuco</motion.p>
-          <motion.h1 initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="mt-2 max-w-sm font-display text-4xl font-extrabold uppercase leading-none md:text-5xl lg:text-6xl">Seu talento<br /><span className="text-accent">merece ser visto.</span></motion.h1>
+          <motion.h1 initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="mt-2 max-w-md font-display text-4xl font-extrabold uppercase leading-none md:text-5xl">Seu talento<br /><span className="text-accent">merece ser visto.</span></motion.h1>
         </div>
       </section>
 
@@ -66,10 +66,10 @@ function Feed() {
           </motion.form>}</AnimatePresence>
 
           <div className="mobile-tab-edge relative"><div className="scroll-quiet flex gap-2 overflow-x-auto py-3 md:gap-2" aria-label="Filtros do feed">
-            {[undefined, ...TIPOS].map((t) => <Button key={t ?? "tudo"} variant="ghost" aria-pressed={filtro === t} onClick={() => void navigate({search:t?{tipo:t}:{}})} className={`relative h-11 shrink-0 rounded-full px-4 text-xs font-semibold md:px-4 ${filtro === t ? "bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground" : "bg-secondary text-secondary-foreground"}`}>{t ? `${t}s` : "Tudo"}</Button>)}
+            {[undefined, ...TIPOS].map((t) => <Button key={t ?? "tudo"} variant="ghost" aria-pressed={filtro === t} onClick={() => void navigate({search:t?{tipo:t}:{}})} className={`relative h-11 shrink-0 rounded-full px-4 text-xs font-semibold md:px-4 ${filtro === t ? "bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground" : "border border-border bg-background text-foreground hover:bg-secondary"}`}>{t ? `${t}s` : "Tudo"}</Button>)}
           </div></div>
           <AnimatePresence mode="popLayout">{lista.map((p, i) => <FadeIn key={p.id} i={i}><PostCard post={p} /></FadeIn>)}</AnimatePresence>
-          {!lista.length && <div className="mt-5 flex flex-col items-start gap-4 rounded-touch bg-card p-6"><h3 className="max-w-xs font-sans text-lg font-semibold leading-snug">{filtro ? "Nenhum registro por aqui ainda." : "O próximo treino merece aparecer aqui."}</h3>{user ? <Button variant="outline" className="touch-control" onClick={()=>setComposerOpen(true)}>Publicar registro<ArrowUpRight /></Button> : <Button variant="outline" className="touch-control md:hidden" asChild><Link to="/auth">Entrar na conta<ArrowUpRight /></Link></Button>}</div>}
+          {!lista.length && <div className="mt-5"><EmptyState icon={Flag} title={filtro ? "Nenhum registro por aqui ainda." : "O próximo treino merece aparecer aqui."} action={user ? <Button variant="outline" className="touch-control" onClick={()=>setComposerOpen(true)}>Publicar registro<ArrowUpRight /></Button> : <Button variant="outline" className="touch-control md:hidden" asChild><Link to="/auth">Entrar na conta<ArrowUpRight /></Link></Button>} /></div>}
           {!user && lista.length>0 && <div className="py-5 md:hidden"><SignInPrompt /></div>}
         </div>
 
