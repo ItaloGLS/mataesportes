@@ -100,7 +100,7 @@
   box-shadow: var(--shadow-card);
 }
 @utility hero-fade { background: var(--gradient-hero); }
-.sports-cover-image { object-position: center 40%; }
+.sports-cover-image { object-position: center top; }
 
 @utility text-gradient-sport {
   background: none; color: var(--accent);
