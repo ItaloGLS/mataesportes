@@ -50,7 +50,7 @@ export function Shell({ children }: { children: ReactNode }) {
             ))}
           </nav>
           <div className="flex items-center justify-end gap-3">
-            {user ? <><Link to="/perfil/$id" params={{ id: user.id }} aria-label="Meu perfil"><span className="grid h-11 w-11 place-items-center rounded-full bg-secondary text-secondary-foreground ring-1 ring-border"><User className="h-4 w-4" /></span></Link><Button variant="ghost" size="icon" className="h-11 w-11" aria-label="Sair da conta" title="Sair da conta" onClick={async()=>{await queryClient.cancelQueries();queryClient.clear();await supabase.auth.signOut();await navigate({to:'/auth',replace:true});}}><LogOut /></Button></> : <Button className="hidden md:inline-flex" asChild disabled={!ready} variant="outline"><Link to="/auth">Entrar</Link></Button>}
+            {user ? <DropdownMenu><DropdownMenuTrigger asChild><button aria-label="Menu da conta" className="grid h-11 w-11 cursor-pointer place-items-center rounded-full bg-secondary text-secondary-foreground ring-1 ring-border"><User className="h-4 w-4" /></button></DropdownMenuTrigger><DropdownMenuContent align="end"><DropdownMenuItem onClick={()=>void navigate({to:'/perfil/$id',params:{id:user.id}})}><User className="h-4 w-4" />Meu perfil</DropdownMenuItem><DropdownMenuItem onClick={async()=>{await queryClient.cancelQueries();queryClient.clear();await supabase.auth.signOut();await navigate({to:'/auth',replace:true});}}><LogOut className="h-4 w-4" />Sair</DropdownMenuItem></DropdownMenuContent></DropdownMenu> : <Button className="hidden md:inline-flex" asChild disabled={!ready} variant="outline"><Link to="/auth">Entrar</Link></Button>}
           </div>
         </div>
       </header>
@@ -69,7 +69,7 @@ export function Shell({ children }: { children: ReactNode }) {
 
 export function Avatar({ iniciais, size = "md", src }: { iniciais: string; size?: "md" | "lg"; src?: string | undefined }) {
   return (
-    <span className={`grid shrink-0 place-items-center rounded-full bg-secondary font-display font-bold text-secondary-foreground ring-1 ring-border ${size === "lg" ? "h-24 w-24 text-3xl ring-4 ring-card" : "h-11 w-11 text-lg"}`}>
+    <span className={`grid shrink-0 place-items-center rounded-full font-display font-bold ${size === "lg" ? "h-24 w-24 bg-primary text-3xl text-accent ring-4 ring-background" : "h-11 w-11 bg-secondary text-lg text-secondary-foreground ring-1 ring-border"}`}>
       {src ? <img src={src} alt="" className="h-full w-full rounded-full object-cover" /> : iniciais}
     </span>
   );
@@ -78,7 +78,7 @@ export function Avatar({ iniciais, size = "md", src }: { iniciais: string; size?
 export function Chip({ children, active, onClick }: { children: ReactNode; active?: boolean; onClick?: () => void }) {
   return (
     <Button type="button" onClick={onClick} variant="ghost" aria-pressed={Boolean(active)}
-      className={`shrink-0 rounded-sm border-0 px-3.5 py-1.5 text-sm font-bold transition-colors ${active ? "bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground" : "bg-secondary text-secondary-foreground hover:bg-secondary/80"}`}>
+      className={`shrink-0 rounded-sm px-3.5 py-1.5 text-sm font-bold transition-colors ${active ? "border-0 bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground" : "border border-border bg-background text-foreground hover:bg-secondary"}`}>
       {children}
     </Button>
   );
