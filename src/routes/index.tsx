@@ -26,7 +26,7 @@ function Feed() {
   const [filtro, setFiltro] = useState<string | null>(null);
   const [texto, setTexto] = useState("");
   const [tipo, setTipo] = useState<Post["tipo"]>("Treino");
-  const [mod, setMod] = useState(MODALIDADES[0]);
+  const [mod, setMod] = useState<string>(MODALIDADES[0]!);
   const me = userById(ME)!;
   const lista = filtro ? posts.filter((p) => p.tipo === filtro) : posts;
 
