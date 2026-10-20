@@ -62,7 +62,7 @@ export function Shell({ children, bare }: { children: ReactNode; bare?: boolean 
         <Button size="icon" className="h-12 w-12 justify-self-center rounded-full bg-accent text-accent-foreground shadow-none hover:bg-accent/80" aria-label="Novo registro" title="Novo registro" onClick={async()=>{if(!user){await navigate({to:'/auth'});return;}await navigate({to:'/',search:{publicar:true}});}}><Plus className="h-6 w-6" /></Button>
         <Link to="/buscar" className="flex min-h-12 flex-col items-center gap-1 text-[10px] font-semibold text-muted-foreground">{({isActive})=><><span className={`grid h-7 w-10 place-items-center rounded-full ${isActive?'bg-secondary text-foreground':''}`}><Search className="h-5 w-5" strokeWidth={isActive?2.5:2}/></span>Buscar</>}</Link>
         {user ? <Link to="/perfil/$id" params={{ id: user.id }} className="flex min-h-12 flex-col items-center gap-1 text-[10px] font-semibold text-muted-foreground">{({isActive})=><><span className={`grid h-7 w-10 place-items-center rounded-full ${isActive?'bg-secondary text-foreground':''}`}><User className="h-5 w-5" /></span>Perfil</>}</Link> : <span aria-label="Perfil indisponível sem conta" className="flex min-h-12 flex-col items-center gap-1 text-[10px] font-semibold text-muted-foreground"><span className="grid h-7 w-10 place-items-center"><User className="h-5 w-5" /></span>Perfil</span>}
-      </nav>
+      </nav>}
     </div>
   );
 }
