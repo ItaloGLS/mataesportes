@@ -13,5 +13,5 @@
 - [x] Apply the approved softer presentation to the website as well.
 
 # Banner and feed finishing
-- [ ] Replace the main cover and apply the uploaded refinements to the empty feed, tabs and mobile navigation clearance.
-- [ ] Verify the cover and content on desktop and mobile.
+- [x] Replace the main cover and apply the uploaded refinements to the empty feed, tabs and mobile navigation clearance.
+- [x] Verify the cover and content on desktop and mobile.
