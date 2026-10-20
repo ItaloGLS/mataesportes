@@ -17,5 +17,5 @@
 - [x] Verify the cover and content on desktop and mobile.
 
 # Regional palette refinement
-- [ ] Apply the approved dark sugarcane green, warm yellow and straw palette with terracotta only on small seals.
-- [ ] Restore the illustrative sugarcane-road cover and verify the feed and events presentation.
+- [x] Apply the approved dark sugarcane green, warm yellow and straw palette with terracotta only on small seals.
+- [x] Restore the illustrative sugarcane-road cover and verify the feed and events presentation.
