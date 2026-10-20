@@ -1,65 +1,18 @@
-import { useState } from "react";
-import { motion, AnimatePresence } from "motion/react";
-import { Link } from "@tanstack/react-router";
-import { Heart, MessageCircle, MapPin, Send } from "lucide-react";
-import { userById, type Post } from "@/lib/data";
-import { useStore } from "@/lib/store";
-import { Avatar } from "./Shell";
-import { Button } from "@/components/ui/button";
-import pedal from "@/assets/pedal-catende.jpg";
-
-const TIPO_COR: Record<Post["tipo"], string> = {
-  Peneira: "bg-accent text-accent-foreground",
-  Conquista: "bg-secondary text-secondary-foreground",
-  Treino: "bg-secondary text-secondary-foreground",
-  Notícia: "bg-secondary text-secondary-foreground",
-};
-
-export function PostCard({ post }: { post: Post }) {
-  const { liked, toggleLike, comentar } = useStore();
-  const [open, setOpen] = useState(false);
-  const [txt, setTxt] = useState("");
-  const autor = userById(post.autor);
-  if (!autor) return null;
-  const isLiked = liked.has(post.id);
-  return (
-    <article className="border-b border-border bg-card px-4 py-6 sm:px-6">
-      <header className="flex items-center gap-3">
-        <Avatar iniciais={autor.iniciais} />
-        <div className="min-w-0 flex-1">
-          <Link to="/perfil/$id" params={{ id: autor.id }} className="font-bold hover:underline">{autor.nome}</Link>
-          <p className="flex items-center gap-1 text-xs text-muted-foreground">
-            <MapPin className="h-3 w-3" /> {post.cidade} · {post.tempo}
-          </p>
-        </div>
-        <span className={`rounded-sm px-2 py-1 text-[10px] font-bold uppercase tracking-wide ${TIPO_COR[post.tipo]}`}>{post.tipo}</span>
-      </header>
-      <p className="mt-4 leading-relaxed">{post.texto}</p>
-      {post.id === "p3" && <figure className="mt-4"><img src={pedal} alt="Imagem ilustrativa de ciclistas em treino nas estradas da Mata Sul" loading="lazy" width={1280} height={768} className="aspect-[5/3] w-full rounded-sm object-cover" /><figcaption className="mt-1 text-[10px] text-muted-foreground">Imagem ilustrativa</figcaption></figure>}
-      <footer className="mt-4 flex gap-2 border-t pt-3">
-        <Button variant="ghost" aria-label="Curtir publicação" aria-pressed={isLiked} onClick={() => toggleLike(post.id)} className={`gap-2 rounded-sm px-2 text-sm font-semibold hover:bg-muted ${isLiked ? "text-foreground bg-accent/30" : "text-muted-foreground"}`}>
-          <motion.span key={String(isLiked)} initial={{ scale: isLiked ? 0.4 : 1 }} animate={{ scale: 1 }} transition={{ type: "spring", stiffness: 500, damping: 12 }}><Heart className={`h-4 w-4 ${isLiked ? "fill-current" : ""}`} /></motion.span> {post.likes}
-        </Button>
-        <Button variant="ghost" aria-label="Comentários" aria-expanded={open} onClick={() => setOpen(!open)} className="gap-2 rounded-sm px-2 text-sm font-semibold text-muted-foreground hover:bg-muted">
-          <MessageCircle className="h-4 w-4" /> {post.comentarios.length}
-        </Button>
-      </footer>
-      <AnimatePresence>{open && (
-        <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="mt-3 space-y-3 overflow-hidden">
-          {post.comentarios.map((c, i) => {
-            const u = userById(c.autor);
-            return (
-              <div key={i} className="rounded-sm bg-muted px-3 py-2 text-sm">
-                <span className="font-bold">{u?.nome ?? "Atleta"}</span> {c.texto}
-              </div>
-            );
-          })}
-          <form className="flex gap-2" onSubmit={(e) => { e.preventDefault(); if (txt.trim()) { comentar(post.id, txt.trim()); setTxt(""); } }}>
-            <input aria-label="Comentário" value={txt} onChange={(e) => setTxt(e.target.value)} placeholder="Escreva um comentário…" className="min-w-0 flex-1 rounded-sm border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring" />
-            <Button type="submit" size="icon" aria-label="Enviar" disabled={!txt.trim()}><Send className="h-4 w-4" /></Button>
-          </form>
-        </motion.div>
-      )}</AnimatePresence>
-    </article>
-  );
+import { useState } from 'react';
+import { motion,AnimatePresence } from 'motion/react';
+import { Link } from '@tanstack/react-router';
+import { Heart,MessageCircle,MapPin,Send,Pencil,Trash2 } from 'lucide-react';
+import type { Post } from '@/lib/data';
+import { useStore } from '@/lib/store';
+import { Avatar } from './Shell';
+import { Button } from './ui/button';
+import { SignInPrompt } from './RouteStates';
+export function PostCard({post}:{post:Post}){
+ const {liked,toggleLike,comentar,userById,user,act,pending}=useStore();const [open,setOpen]=useState(false);const [txt,setTxt]=useState('');const [editing,setEditing]=useState(false);const [body,setBody]=useState(post.texto);const autor=userById(post.autor);if(!autor)return null;const isLiked=liked.has(post.id);
+ const safely=async(fn:()=>Promise<unknown>)=>{try{await fn();}catch{/* mutation shows feedback */}};
+ return <article className="border-b border-border bg-card px-4 py-6 sm:px-6"><header className="flex items-center gap-3"><Avatar iniciais={autor.iniciais} src={autor.avatarUrl}/><div className="min-w-0 flex-1"><Link to="/perfil/$id" params={{id:autor.id}} className="font-bold hover:underline">{autor.nome}</Link><p className="flex items-center gap-1 text-xs text-muted-foreground"><MapPin className="h-3 w-3"/>{post.cidade} · {post.tempo}</p></div><span className={`rounded-sm px-2 py-1 text-[10px] font-bold uppercase ${post.tipo==='Peneira'?'bg-accent text-accent-foreground':'bg-secondary text-secondary-foreground'}`}>{post.tipo}</span></header>
+ {editing?<form className="mt-4 space-y-3" onSubmit={e=>{e.preventDefault();void safely(async()=>{await act({kind:'post.update',id:post.id,value:{texto:body,tipo:post.tipo,modalidade:post.modalidade,cidade:post.cidade,image_path:post.image_path}});setEditing(false);});}}><textarea aria-label="Editar publicação" value={body} onChange={e=>setBody(e.target.value)} maxLength={5000} required rows={3} className="w-full rounded-sm border bg-background p-3"/><div className="flex gap-2"><Button disabled={pending}>Salvar publicação</Button><Button variant="ghost" type="button" onClick={()=>setEditing(false)}>Cancelar</Button></div></form>:<p className="mt-4 whitespace-pre-wrap leading-relaxed">{post.texto}</p>}
+ {post.imageUrl&&<img src={post.imageUrl} alt={`Foto da publicação de ${autor.nome}`} loading="lazy" className="mt-4 max-h-96 w-full rounded-sm object-contain"/>}
+ <footer className="mt-4 flex flex-wrap items-center gap-2 border-t pt-3"><Button variant="ghost" aria-label="Curtir publicação" aria-pressed={isLiked} disabled={pending||!user} onClick={()=>void safely(()=>toggleLike(post.id))} className={`rounded-sm px-2 ${isLiked?'bg-accent/30 text-foreground':'text-muted-foreground'}`}><motion.span key={String(isLiked)} initial={{scale:isLiked?0.4:1}} animate={{scale:1}}><Heart className={`h-4 w-4 ${isLiked?'fill-current':''}`}/></motion.span>{post.likes}</Button><Button variant="ghost" aria-label="Comentários" aria-expanded={open} onClick={()=>setOpen(!open)} className="px-2 text-muted-foreground"><MessageCircle/>{post.comentarios.length}</Button>{user?.id===post.autor&&<div className="ml-auto flex"><Button variant="ghost" size="icon" title="Editar publicação" aria-label="Editar publicação" onClick={()=>{setBody(post.texto);setEditing(!editing);}}><Pencil/></Button><Button disabled={pending} variant="ghost" size="icon" title="Excluir publicação" aria-label="Excluir publicação" onClick={()=>{if(window.confirm('Excluir esta publicação?'))void safely(()=>act({kind:'post.delete',id:post.id}));}}><Trash2/></Button></div>}</footer>
+ <AnimatePresence>{open&&<motion.div initial={{opacity:0,height:0}} animate={{opacity:1,height:'auto'}} exit={{opacity:0,height:0}} className="mt-3 space-y-3 overflow-hidden">{post.comentarios.map(c=><div key={c.id} className="flex items-center gap-2 rounded-sm bg-muted px-3 py-2 text-sm"><p className="min-w-0 flex-1 break-words"><strong>{userById(c.autor)?.nome??'Atleta'}</strong> {c.texto}</p>{user?.id===c.autor&&<Button variant="ghost" size="icon" title="Excluir comentário" aria-label="Excluir comentário" disabled={pending} onClick={()=>void safely(()=>act({kind:'comment.delete',id:c.id}))}><Trash2/></Button>}</div>)}{user?<form className="flex gap-2" onSubmit={e=>{e.preventDefault();if(txt.trim())void safely(async()=>{await comentar(post.id,txt.trim());setTxt('');});}}><input aria-label="Comentário" maxLength={2000} value={txt} onChange={e=>setTxt(e.target.value)} placeholder="Escreva um comentário…" className="min-w-0 flex-1 rounded-sm border bg-background px-3 py-2 text-sm"/><Button type="submit" size="icon" aria-label="Enviar" disabled={!txt.trim()||pending}><Send/></Button></form>:<SignInPrompt/>}</motion.div>}</AnimatePresence></article>;
 }
