@@ -8,6 +8,13 @@
       "when": 1792512211139,
       "tag": "0000_sports_platform",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1792512276559,
+      "tag": "0001_profile_atomic_save",
+      "breakpoints": true
     }
   ]
 }

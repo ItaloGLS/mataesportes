@@ -346,6 +346,7 @@ export type Database = {
           inscritos: number
         }[]
       }
+      save_sports_profile: { Args: { payload: Json }; Returns: undefined }
     }
     Enums: {
       [_ in never]: never
