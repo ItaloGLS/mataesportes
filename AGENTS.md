@@ -13,6 +13,7 @@
 - Derive sports statistics from persisted user content, never fabricated records; supporting cover imagery is illustrative.
 - Keep domain types and validation browser/DOM-independent, database access in server functions, and web UI separate; this enables a future first-party React Native client to share the database rules.
 - Use per-request QueryClient instances with Router SSR query integration; this prevents stale hydration and cross-request cache leakage.
+- Keep public navigation reads fresh for a short shared Query window and personal reads keyed by account, invalidating after writes; index related rows once and memoize view indexes to avoid repeated network reads and quadratic processing.
 - Preload visible primary navigation routes on viewport entry and other links on intent, retaining Query-controlled freshness; this avoids downloading page chunks only after the first click without adding a second data cache.
 - Apply optimistic social updates in the shared Query cache with operation-scoped rollback, then reconcile after outstanding writes finish; this gives immediate feedback without losing concurrent changes or waiting for a full platform refresh.
 - Maintain one root auth subscriber and session-driven navigation, with public loaders reading only public data; authenticated mutations validate identity server-side and RLS owns authorization.
