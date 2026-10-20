@@ -8,7 +8,7 @@ import { ArrowUpRight, Send, Plus, X } from "lucide-react";
 import { PostCard } from "@/components/PostCard";
 import { EventoCard } from "@/components/EventoCard";
 import { useStore, ME } from "@/lib/store";
-import { CIDADES, MODALIDADES, userById, type Post } from "@/lib/data";
+import { MODALIDADES, userById, type Post } from "@/lib/data";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -40,18 +40,17 @@ function Feed() {
   return (
     <Shell>
       <section className="relative overflow-hidden md:mx-8">
-        <motion.img initial={{ scale: 1.04 }} animate={{ scale: 1 }} transition={{ duration: 1.4, ease: "easeOut" }} src={hero} width={1600} height={800} fetchPriority="high" alt="Atletas em estrada da Mata Sul" className="h-64 w-full object-cover md:h-72" />
+        <motion.img initial={{ scale: 1.04 }} animate={{ scale: 1 }} transition={{ duration: 1.4, ease: "easeOut" }} src={hero} width={1600} height={800} fetchPriority="high" alt="Atletas em estrada da Mata Sul" className="h-48 w-full object-cover md:h-56" />
         <div className="hero-fade absolute inset-0 flex flex-col justify-center p-6 text-primary-foreground md:p-10">
           <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-xs font-bold uppercase tracking-widest text-accent">Mata Sul · Pernambuco</motion.p>
           <motion.h1 initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="mt-3 max-w-lg font-display text-5xl font-extrabold uppercase leading-none md:text-6xl">Mata Esportes</motion.h1>
-          <p className="mt-3 max-w-xs text-base font-medium">Terra de sol, açúcar<br />e gente forte.</p>
         </div>
         <div className="race-stripe absolute inset-x-0 bottom-0 h-1.5" />
       </section>
 
       <div className="grid gap-8 px-4 py-7 md:grid-cols-[minmax(0,1fr)_260px] md:px-8 lg:grid-cols-[minmax(0,1fr)_290px]">
         <div className="min-w-0">
-          <div className="flex flex-wrap items-center justify-between gap-3 border-b-2 border-primary pb-4"><div><p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Na estrada. No campo. Na comunidade.</p><h2 className="mt-1 text-3xl font-extrabold uppercase">Da nossa região</h2></div><Button onClick={() => setComposerOpen(!composerOpen)} aria-expanded={composerOpen} className="rounded-sm bg-accent font-bold text-accent-foreground shadow-none hover:bg-accent/80">{composerOpen ? <X /> : <Plus />} {composerOpen ? "Fechar" : "Novo registro"}</Button></div>
+          <div className="flex flex-wrap items-center justify-between gap-3 border-b-2 border-primary pb-4"><h2 className="text-3xl font-extrabold uppercase">Da nossa região</h2><Button onClick={() => setComposerOpen(!composerOpen)} aria-expanded={composerOpen} className="rounded-sm bg-accent font-bold text-accent-foreground shadow-none hover:bg-accent/80">{composerOpen ? <X /> : <Plus />} {composerOpen ? "Fechar" : "Novo registro"}</Button></div>
           <AnimatePresence>{composerOpen && <motion.form initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden border-b bg-secondary/50" onSubmit={(e) => { e.preventDefault(); if (!texto.trim()) return; publicar({ texto: texto.trim(), tipo, modalidade: mod, cidade: me.cidade }); setTexto(""); setFiltro(null); setComposerOpen(false); }}>
             <div className="space-y-3 p-4"><div className="grid grid-cols-2 gap-3"><label className="text-xs font-bold">Registro<select aria-label="Tipo de registro" value={tipo} onChange={(e) => setTipo(e.target.value as Post["tipo"])} className="mt-1 block w-full rounded-sm border bg-card px-2 py-2 text-sm">{TIPOS.map((t) => <option key={t}>{t}</option>)}</select></label><label className="text-xs font-bold">Modalidade<select aria-label="Modalidade" value={mod} onChange={(e) => setMod(e.target.value)} className="mt-1 block w-full rounded-sm border bg-card px-2 py-2 text-sm">{MODALIDADES.map((m) => <option key={m}>{m}</option>)}</select></label></div>
               <textarea aria-label="Texto do registro" value={texto} onChange={(e) => setTexto(e.target.value)} rows={3} placeholder="Como foi o treino? Qual é a próxima conquista?" className="block w-full resize-y rounded-sm border bg-card px-3 py-3 text-sm outline-none focus:ring-1 focus:ring-ring" /><div className="flex justify-end"><Button type="submit" disabled={!texto.trim()}><Send />Publicar {tipo.toLowerCase()}</Button></div></div>
@@ -68,11 +67,7 @@ function Feed() {
             <h2 className="text-2xl font-bold uppercase">Na agenda</h2>
             <Link to="/eventos" className="flex items-center gap-1 text-xs font-semibold text-foreground">Ver todas<ArrowUpRight className="h-4 w-4" /></Link>
           </div>
-          {eventos.slice(0, 3).map((e, i) => <FadeIn key={e.id} i={i + 2}><EventoCard e={e} /></FadeIn>)}
-          <div className="mt-7 border-t-2 border-primary pt-4">
-            <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Nossa casa</p><h3 className="mt-1 text-2xl font-bold uppercase">Mata Sul, presente.</h3>
-            <p className="mt-3 text-xs leading-loose text-muted-foreground">{CIDADES.join(" · ")}</p>
-          </div>
+          {eventos.slice(0, 2).map((e, i) => <FadeIn key={e.id} i={i + 2}><EventoCard e={e} /></FadeIn>)}
         </aside>
       </div>
     </Shell>
