@@ -3,7 +3,7 @@ import { createClient } from '@supabase/supabase-js';
 import type { Database } from '@/integrations/supabase/types';
 import { requireSupabaseAuth } from '@/integrations/supabase/auth-middleware';
 import { actionSchema } from './domain/schemas';
-import { initials, type User, type Post, type Evento } from './data';
+import { initials, type User, type Post, type Evento, type Oportunidade } from './data';
 
 export const getPlatform = createServerFn({method:'GET'}).handler(async () => {
  const url = process.env['SUPABASE_URL']; const key = process.env['SUPABASE_PUBLISHABLE_KEY'];

@@ -21,6 +21,9 @@ export const actionSchema = z.discriminatedUnion('kind',[
  z.object({kind:z.literal('registration'), id:uuid, active:z.boolean()}),
  z.object({kind:z.literal('follow'), id:uuid, active:z.boolean()}),
  z.object({kind:z.literal('profile'), value:profileSchema}),
+ z.object({kind:z.literal('opportunity.create'), value:opportunitySchema}),
+ z.object({kind:z.literal('opportunity.update'), id:uuid, value:opportunitySchema}),
+ z.object({kind:z.literal('opportunity.delete'), id:uuid}),
 ]);
 export type Action = z.infer<typeof actionSchema>;
 export const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
