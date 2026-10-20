@@ -14,6 +14,8 @@ export const Route = createFileRoute("/perfil/$id")({
       { name: "description", content: "Pódios, marcas, modalidades e biografia de atletas da Mata Sul." },
       { property: "og:title", content: "Perfil — Mata Esportes" },
       { property: "og:description", content: "Currículo esportivo na rede da Mata Sul de Pernambuco." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: Perfil,

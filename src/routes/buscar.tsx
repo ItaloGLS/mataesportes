@@ -14,6 +14,8 @@ export const Route = createFileRoute("/buscar")({
       { name: "description", content: "Encontre atletas, treinadores, olheiros e provas por modalidade e cidade da Mata Sul." },
       { property: "og:title", content: "Buscar na Mata Esportes" },
       { property: "og:description", content: "Filtros por modalidade e cidade da Mata Sul de Pernambuco." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: Buscar,

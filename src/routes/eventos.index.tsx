@@ -14,6 +14,8 @@ export const Route = createFileRoute("/eventos/")({
       { name: "description", content: "Corridas, pedais, torneios e travessias na Mata Sul de Pernambuco. Inscreva-se." },
       { property: "og:title", content: "Eventos esportivos da Mata Sul" },
       { property: "og:description", content: "Calendário de competições regionais com inscrição online." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: Eventos,
