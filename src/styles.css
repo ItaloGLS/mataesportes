@@ -126,6 +126,7 @@
   .mobile-event { border: 0; background: var(--card); border-radius: var(--radius-touch); padding: 18px; margin-top: 12px; }
   .mobile-date { border-radius: 12px; }
 @media (max-width: 767px) {
+  .mobile-scroll-space { padding-bottom: calc(100px + env(safe-area-inset-bottom)); }
   .mobile-bottom-nav { box-shadow: var(--shadow-mobile-nav); padding-bottom: env(safe-area-inset-bottom); }
   .sports-cover-image { object-position: 75% 35%; }
   .sports-cover .hero-fade { background: var(--gradient-hero-mobile); }
