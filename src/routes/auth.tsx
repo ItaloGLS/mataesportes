@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import { useState } from 'react';
-import hero from '@/assets/hero.jpg';
+import hero from '@/assets/hero.webp';
 import { supabase } from '@/integrations/supabase/client';
 import { useSession } from '@/lib/store';
 import { Shell } from '@/components/Shell';

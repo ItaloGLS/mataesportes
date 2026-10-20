@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import hero from "@/assets/hero.jpg";
+import hero from "@/assets/hero.webp";
 import { motion, AnimatePresence } from "motion/react";
 import { Shell, FadeIn } from "@/components/Shell";
 import { Button } from "@/components/ui/button";
@@ -19,6 +19,7 @@ export const Route = createFileRoute("/")({
   notFoundComponent: Missing,
   validateSearch: (s:Record<string,unknown>): {tipo?:string;publicar?:boolean} => ({...(typeof s['tipo']==='string'?{tipo:s['tipo']}:{}),...(s['publicar']===true||s['publicar']==='true'?{publicar:true}:{})}),
   head: () => ({
+    links: [{ rel: "preload", as: "image", href: hero, fetchPriority: "high" }],
     meta: [
       { title: "Mata Esportes — Rede social esportiva da Mata Sul de PE" },
       { name: "description", content: "Feed, peneiras, competições e currículos esportivos de atletas da Mata Sul de Pernambuco." },

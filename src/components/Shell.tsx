@@ -89,8 +89,8 @@ export function Chip({ children, active, onClick }: { children: ReactNode; activ
 
 export function FadeIn({ children, i = 0, className }: { children: ReactNode; i?: number; className?: string }) {
   return (
-    <motion.div layout initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: 0.96 }}
-      transition={{ duration: 0.35, delay: Math.min(i, 8) * 0.05, ease: "easeOut" }} className={className}>
+    <motion.div layout initial={{ opacity: 1, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: 0.96 }}
+      transition={{ duration: 0.18, delay: Math.min(i, 3) * 0.02, ease: "easeOut" }} className={className}>
       {children}
     </motion.div>
   );
