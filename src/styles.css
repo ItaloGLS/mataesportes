@@ -83,6 +83,5 @@
 
 @utility text-gradient-sport {
   background: none; color: var(--accent);
-  -webkit-background-clip: text; background-clip: text; color: transparent;
 }
 @utility bg-gradient-sport { background: var(--accent); }
