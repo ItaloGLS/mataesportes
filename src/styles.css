@@ -39,7 +39,7 @@
 }
 
 :root {
-  --radius: 0.25rem;
+  --radius: 1rem;
   --background: oklch(0.975 0.003 90);
   --foreground: oklch(0.23 0.005 85);
   --card: oklch(0.998 0.001 90);
@@ -114,7 +114,6 @@
   &::-webkit-scrollbar { display: none; }
 }
 
-@media (max-width: 767px) {
   body { background-image: linear-gradient(112deg, var(--paper-wash), transparent 70%); }
   .touch-control { min-height: 48px; border-radius: var(--radius-touch); }
   .mobile-primary { background: var(--accent); color: var(--accent-foreground); border: 0; box-shadow: none; }
@@ -124,6 +123,7 @@
   .mobile-post footer { border: 0; padding-top: 0; }
   .mobile-event { border: 0; background: var(--card); border-radius: var(--radius-touch); padding: 18px; margin-top: 12px; }
   .mobile-date { border-radius: 12px; }
+@media (max-width: 767px) {
   .mobile-bottom-nav { box-shadow: var(--shadow-mobile-nav); padding-bottom: env(safe-area-inset-bottom); }
   .mobile-tab-edge::after { content: ''; position: absolute; right: 0; top: 0; bottom: 0; width: 22px; pointer-events: none; background: var(--gradient-tabs-edge); }
 }
