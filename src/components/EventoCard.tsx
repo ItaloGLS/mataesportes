@@ -7,9 +7,10 @@ export function EventoCard({ e }: { e: Evento }) {
   const encerrado = e.encerrado || e.data < new Date().toLocaleDateString('en-CA');
   const abertas = !encerrado && e.inscritos < e.vagas;
   const campeao = e.encerrado ? [...e.resultado].sort((a, b) => a.posicao - b.posicao)[0] : undefined;
+  const hoje = e.data === new Date().toLocaleDateString('en-CA');
   const pct = e.vagas > 0 ? Math.min(100, Math.round((e.inscritos / e.vagas) * 100)) : 0;
   return (
-    <Link to="/eventos/$id" params={{ id: e.id }} className="mobile-event group flex items-start gap-3 border-b py-5 transition hover:bg-secondary/40">
+    <Link to="/eventos/$id" params={{ id: e.id }} className={`mobile-event group flex ${encerrado ? "opacity-60" : ""}`} data-x="" key2=" items-start gap-3 border-b py-5 transition hover:bg-secondary/40">
       <div className="mobile-date flex w-14 shrink-0 flex-col items-center justify-center rounded-sm bg-primary py-3 text-primary-foreground">
         <span className="font-display text-3xl font-extrabold leading-none text-accent">{dia}</span>
         <span className="text-xs uppercase">{mes?.replace(".", "")}</span>
