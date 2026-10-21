@@ -1,5 +1,5 @@
 import { Link } from '@tanstack/react-router';
-import { ExternalLink, MapPin, MoreVertical, Pencil, Trash2 } from 'lucide-react';
+import { BadgeCheck, ExternalLink, MapPin, MoreVertical, Pencil, Trash2 } from 'lucide-react';
 import { Button } from './ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from './ui/dropdown-menu';
 import { useStore } from '@/lib/store';
@@ -16,11 +16,14 @@ export function OportunidadeCard({ o, onEdit }: { o: Oportunidade; onEdit?: (o: 
   const autor = userById(o.autor);
   const mine = user?.id === o.autor;
   const encerrada = o.prazo ? Date.parse(o.prazo + 'T23:59:59') < Date.now() : false;
+  const dias = o.prazo ? Math.ceil((Date.parse(o.prazo + 'T23:59:59') - Date.now()) / 86400000) : null;
+  const oficial = Boolean(o.link);
   return (
-    <article className="flex flex-col gap-3 rounded-touch border bg-card p-5">
+    <article className="flex h-full flex-col gap-3 rounded-touch border bg-card p-5">
       <div className="flex items-start justify-between gap-3">
         <div className="flex flex-wrap items-center gap-2">
           <span className={`rounded-sm px-2.5 py-1 text-xs font-bold uppercase tracking-wide ${selo[o.tipo]}`}>{o.tipo}</span>
+          {oficial && <span className="flex items-center gap-1 rounded-sm bg-secondary px-2.5 py-1 text-xs font-bold uppercase tracking-wide text-secondary-foreground"><BadgeCheck className="h-3.5 w-3.5" />Fonte oficial</span>}
           {encerrada && <span className="rounded-sm bg-muted px-2.5 py-1 text-xs font-bold uppercase tracking-wide text-muted-foreground">Encerrada</span>}
         </div>
         {mine && (
@@ -43,11 +46,16 @@ export function OportunidadeCard({ o, onEdit }: { o: Oportunidade; onEdit?: (o: 
       <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground">
         <span className="flex items-center gap-1"><MapPin className="h-4 w-4" />{o.cidade}</span>
         {o.modalidade && <span>{o.modalidade}</span>}
-        {o.prazo && <span className="font-bold text-foreground">Prazo: {formatData(o.prazo)}</span>}
       </div>
+      {o.prazo && !encerrada && dias !== null && (
+        <div>
+          <p className="font-display text-2xl font-bold">{dias <= 0 ? 'Último dia' : dias === 1 ? 'Falta 1 dia' : `Faltam ${dias} dias`}</p>
+          <p className="text-xs text-muted-foreground">Prazo: {new Date(o.prazo + 'T12:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })}</p>
+        </div>
+      )}
       <div className="mt-auto flex items-center justify-between gap-3 pt-1">
-        {autor && <Link to="/perfil/$id" params={{ id: autor.id }} className="text-xs font-semibold text-muted-foreground hover:text-foreground">Publicado por {autor.nome}</Link>}
-        {o.link && <Button variant="outline" size="sm" asChild className="ml-auto"><a href={o.link} target="_blank" rel="noopener noreferrer">Saiba mais<ExternalLink className="h-4 w-4" /></a></Button>}
+        {autor && !oficial && <Link to="/perfil/$id" params={{ id: autor.id }} className="text-xs font-semibold text-muted-foreground hover:text-foreground">Publicado por {autor.nome}</Link>}
+        {o.link && <Button variant="outline" size="sm" asChild className="ml-auto"><a href={o.link} target="_blank" rel="noopener noreferrer">Ver edital<ExternalLink className="h-4 w-4" /></a></Button>}
       </div>
     </article>
   );

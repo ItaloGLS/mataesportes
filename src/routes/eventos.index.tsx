@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Plus,X,CalendarDays } from 'lucide-react';
 import { Shell,Chip,FadeIn } from '@/components/Shell';
 import { Button } from '@/components/ui/button';
-import { EventoCard } from '@/components/EventoCard';
+import { EventoCard,eventoEncerrado } from '@/components/EventoCard';
 import { EventForm } from '@/components/EventForm';
 import { useStore } from '@/lib/store';
 import { MODALIDADES } from '@/lib/data';
