@@ -1,6 +1,5 @@
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import { useState } from 'react';
-import hero from '@/assets/hero.webp';
 import { supabase } from '@/integrations/supabase/client';
 import { useSession } from '@/lib/store';
 import { Shell } from '@/components/Shell';
@@ -24,16 +23,7 @@ function Auth() {
 
   return (
     <Shell bare>
-      <div className="grid min-h-[calc(100vh-5rem)] lg:grid-cols-2">
-        <div className="relative hidden overflow-hidden lg:block">
-          <img src={hero} alt="Ciclistas e corredores numa estrada entre canaviais, inspirada na Mata Sul de Pernambuco" className="absolute inset-0 h-full w-full object-cover" />
-          <div className="hero-fade absolute inset-0 flex flex-col justify-end p-10">
-            <p className="text-xs font-bold uppercase tracking-widest text-accent">Mata Sul · Pernambuco</p>
-            <p className="mt-2 max-w-sm font-display text-5xl font-extrabold uppercase leading-none text-primary-foreground">Seu talento<br /><span className="text-accent">merece ser visto.</span></p>
-          </div>
-        </div>
-
-        <div className="flex min-h-[calc(100vh-5rem)] items-center justify-center bg-card px-4 py-10">
+      <div className="flex min-h-[calc(100vh-5rem)] items-center justify-center px-4 py-10">
           <div className="w-full max-w-[440px]">
             <div className="rounded-[20px] border bg-background p-8 md:p-10">
             <div className="flex items-center gap-3">
@@ -98,7 +88,6 @@ function Auth() {
             <p className="mt-6 text-center text-xs font-semibold uppercase tracking-widest text-muted-foreground">Atletas · Treinadores · Olheiros da Mata Sul</p>
           </div>
         </div>
-      </div>
     </Shell>
   );
 }
