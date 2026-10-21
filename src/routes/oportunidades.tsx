@@ -46,7 +46,7 @@ function Oportunidades() {
           <Chip active={!tipo} onClick={() => void navigate({ search: {} })}>Todas</Chip>
           {TIPOS_OPORTUNIDADE.map((t) => <Chip key={t} active={tipo === t} onClick={() => void navigate({ search: { tipo: t } })}>{t}</Chip>)}
         </div>
-        <div className="grid gap-4 md:grid-cols-2">
+        <div className={`grid gap-4 ${lista.length >= 3 ? 'md:grid-cols-2 xl:grid-cols-3' : lista.length === 2 ? 'md:grid-cols-2' : ''}`}>
           {lista.map((o, i) => <FadeIn key={o.id} i={i}><OportunidadeCard o={o} onEdit={openEdit} /></FadeIn>)}
         </div>
         {!lista.length && (

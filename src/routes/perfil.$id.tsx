@@ -28,13 +28,13 @@ function Perfil() {
   const meus = posts.filter((p) => p.autor === id);
   const seguidores = follows.filter((f) => f.followed === id).length;
   const seguindo = follows.filter((f) => f.follower === id).length;
-  const dados = [u.role, u.modalidades[0], u.cidade ? `${u.cidade}, PE` : null].filter(Boolean).join(' · ');
+  const dados = [u.role, u.modalidades.slice(0, 2).join(' · ') || null, u.cidade ? `${u.cidade}, PE` : null].filter(Boolean).join(' · ');
 
   return (
     <Shell>
       <div className="space-y-7 px-4 py-6 md:px-8">
         <section className="space-y-5">
-          <div className="h-24 rounded-sm bg-primary md:h-28" aria-hidden />
+          <div className="relative h-24 overflow-hidden rounded-sm bg-primary md:h-28" aria-hidden><div className="absolute inset-y-0 right-0 w-1/3 bg-accent [clip-path:polygon(30%_0,100%_0,100%_100%,0_100%)]" /><div className="absolute inset-y-0 right-[30%] w-6 bg-accent/60 [clip-path:polygon(60%_0,100%_0,40%_100%,0_100%)]" /></div>
           <div className="flex flex-wrap items-start gap-4">
             <div className="-mt-12 md:-mt-14"><Avatar iniciais={u.iniciais} src={u.avatarUrl} size="lg" /></div>
             <div className="min-w-0 flex-1 pt-2">
@@ -48,9 +48,9 @@ function Perfil() {
             ) : <SignInPrompt />}
           </div>
           {u.bio && <p className="whitespace-pre-wrap leading-relaxed">{u.bio}</p>}
-          {u.modalidades.length > 1 && <p className="text-sm font-semibold">{u.modalidades.join(' · ')}</p>}
+          
           <p className="flex gap-6 text-sm text-muted-foreground">
-            <span><strong className="font-display text-2xl font-bold text-foreground">{seguidores}</strong> seguidores</span>
+            <span><strong className="font-display text-2xl font-bold text-foreground">{seguidores}</strong> {seguidores === 1 ? 'seguidor' : 'seguidores'}</span>
             <span><strong className="font-display text-2xl font-bold text-foreground">{seguindo}</strong> seguindo</span>
           </p>
         </section>
