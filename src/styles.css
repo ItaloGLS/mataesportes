@@ -117,7 +117,7 @@
   .mobile-date { border-radius: 12px; }
 @media (max-width: 767px) {
   .mobile-scroll-space { padding-bottom: calc(100px + env(safe-area-inset-bottom)); }
-  .mobile-bottom-nav { box-shadow: var(--shadow-mobile-nav); padding-bottom: env(safe-area-inset-bottom); }
+  .mobile-bottom-nav { box-shadow: var(--shadow-mobile-nav); padding-bottom: calc(0.5rem + env(safe-area-inset-bottom)); }
   .sports-cover-image { object-position: 62% 55%; }
   .sports-cover .hero-fade { background: var(--gradient-hero-mobile); }
 }
