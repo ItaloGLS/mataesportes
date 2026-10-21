@@ -98,6 +98,7 @@ function Auth() {
             <p className="mt-6 text-center text-xs font-semibold uppercase tracking-widest text-muted-foreground">Atletas · Treinadores · Olheiros da Mata Sul</p>
           </div>
         </div>
+      </div>
     </Shell>
   );
 }
