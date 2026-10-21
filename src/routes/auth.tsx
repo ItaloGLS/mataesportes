@@ -7,6 +7,7 @@ import { Shell } from '@/components/Shell';
 import { Button } from '@/components/ui/button';
 import { metadata } from '@/components/RouteStates';
 import { authErrorMessage } from '@/lib/auth-errors';
+import logoMark from '@/assets/logo-mark.png';
 
 export const Route = createFileRoute('/auth')({ head: () => metadata('Entrar e criar conta', 'Sua conta esportiva na Mata Sul de Pernambuco.'), component: Auth });
 
@@ -32,9 +33,18 @@ function Auth() {
           </div>
         </div>
 
-        <div className="flex items-start justify-center bg-card px-4 py-10 lg:items-center lg:py-14">
-          <div className="w-full max-w-[440px] rounded-[20px] border bg-background p-8 md:p-10">
-            <h1 className="font-display text-4xl font-extrabold uppercase">{titulo}</h1>
+        <div className="flex min-h-[calc(100vh-5rem)] items-center justify-center bg-card px-4 py-10">
+          <div className="w-full max-w-[440px]">
+            <div className="rounded-[20px] border bg-background p-8 md:p-10">
+            <div className="flex items-center gap-3">
+              <img src={logoMark} alt="" className="h-10 w-auto" />
+              <div>
+                <p className="font-display text-lg font-extrabold uppercase leading-none tracking-wide">Mata Esportes</p>
+                <p className="text-xs text-muted-foreground">A rede esportiva da Mata Sul</p>
+              </div>
+            </div>
+            <span className="mt-5 block h-1 w-10 bg-accent" aria-hidden="true" />
+            <h1 className="mt-3 font-display text-4xl font-extrabold uppercase">{titulo}</h1>
             {user ? (
               <div className="mt-6 space-y-4">
                 <p>Você já está conectado.</p>
@@ -84,9 +94,10 @@ function Auth() {
                 </p>
               </>
             )}
+            </div>
+            <p className="mt-6 text-center text-xs font-semibold uppercase tracking-widest text-muted-foreground">Atletas · Treinadores · Olheiros da Mata Sul</p>
           </div>
         </div>
-      </div>
     </Shell>
   );
 }
