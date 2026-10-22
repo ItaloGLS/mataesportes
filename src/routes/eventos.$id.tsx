@@ -144,7 +144,7 @@ function Detalhe() {
                 ) : participants.isError ? (
                   <p role="alert" className="mt-4 text-sm">Não foi possível carregar participantes.</p>
                 ) : participants.data?.length ? (
-                  <ul className="mt-4 space-y-2">{participants.data.map((p) => <li key={p.user_id}><Link className="font-semibold hover:underline" to="/perfil/$id" params={{ id: p.user_id }}>{userById(p.user_id)?.nome ?? 'Participante'}</Link></li>)}</ul>
+                  <ul className="mt-4 space-y-2">{participants.data.map((p) => <li key={p.user_id}><Link className="font-semibold hover:underline" to="/perfil/$id" params={{ id: p.user_id }}>{p.profiles?.nome ?? 'Participante'}</Link></li>)}</ul>
                 ) : (
                   <div className="mt-4"><EmptyState icon={Users} title="Seja o primeiro a se inscrever." /></div>
                 ))}
