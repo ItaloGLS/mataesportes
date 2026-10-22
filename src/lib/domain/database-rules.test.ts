@@ -25,6 +25,17 @@ suite('Real database access and registration rules',()=>{
   const responses=await Promise.all([1,2].map(()=>request('/rest/v1/likes',users[0]?.token,'POST',{post_id:postId,user_id:users[0]?.id})));expect(responses.filter(r=>r.ok)).toHaveLength(1);
   const rows=await request(`/rest/v1/likes?post_id=eq.${postId}`,users[0]?.token);expect(await rows.json()).toHaveLength(1);
  });
+ it('stored like and comment counters follow real likes and comments',async()=>{
+  const read=async()=>(await (await request(`/rest/v1/posts?id=eq.${postId}&select=likes_count,comments_count`,undefined)).json())[0];
+  expect((await read()).likes_count).toBe(1);
+  const c=await request('/rest/v1/comments',users[1]?.token,'POST',{post_id:postId,autor:users[1]?.id,texto:'Bom treino'});expect(c.ok).toBe(true);const commentId=(await c.json())[0].id;
+  expect((await read()).comments_count).toBe(1);
+  await request(`/rest/v1/comments?id=eq.${commentId}`,users[1]?.token,'DELETE');
+  expect((await read()).comments_count).toBe(0);
+ });
+ it('a post owner cannot overwrite the like counter',async()=>{
+  const r=await request(`/rest/v1/posts?id=eq.${postId}`,users[0]?.token,'PATCH',{likes_count:999});expect(r.ok).toBe(false);
+ });
  it('simultaneous registrations cannot exceed one place',async()=>{
   const responses=await Promise.all(users.map(u=>request('/rest/v1/inscricoes',u.token,'POST',{evento_id:eventId,user_id:u.id})));expect(responses.filter(r=>r.ok)).toHaveLength(1);
   const counts=await request('/rest/v1/rpc/event_counts',undefined,'POST',{});const rows=await counts.json();expect(rows.find((r:{id:string})=>r.id===eventId).inscritos).toBe(1);

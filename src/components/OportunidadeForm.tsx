@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import { Button } from './ui/button';
 import { CIDADES, MODALIDADES, TIPOS_OPORTUNIDADE, type Oportunidade } from '@/lib/data';
-import { useStore } from '@/lib/store';
+import { useActions } from '@/lib/store';
 
 const input = 'mt-1 w-full rounded-sm border bg-card px-3 py-2 text-sm';
 
 export function OportunidadeForm({ oportunidade, onDone }: { oportunidade?: Oportunidade | undefined; onDone: () => void }) {
-  const { act, pending } = useStore();
+  const { act, pending } = useActions();
   const [message, setMessage] = useState('');
   return (
     <form className="grid gap-4 rounded-touch border bg-card p-5 md:grid-cols-2" onSubmit={async (e) => {

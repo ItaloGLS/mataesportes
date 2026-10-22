@@ -43,6 +43,13 @@
       "when": 1792534066756,
       "tag": "0005_event_schedule_results",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1792685009293,
+      "tag": "0006_post_counters_feed_indexes",
+      "breakpoints": true
     }
   ]
 }

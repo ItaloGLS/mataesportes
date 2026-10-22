@@ -1,16 +1,17 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { useState } from 'react';
+import { useSuspenseQuery } from '@tanstack/react-query';
 import { Pencil, Trophy, Timer, MessageSquare } from 'lucide-react';
-import { Shell, Avatar, FadeIn } from '@/components/Shell';
+import { Shell, Avatar } from '@/components/Shell';
 import { Button } from '@/components/ui/button';
-import { PostCard } from '@/components/PostCard';
+import { FeedList } from '@/components/FeedList';
 import { ProfileForm } from '@/components/ProfileForm';
-import { useStore } from '@/lib/store';
-import { platformQuery } from '@/lib/queries';
+import { useActions, useFollowing } from '@/lib/store';
+import { feedQuery, profileQuery } from '@/lib/queries';
 import { metadata, LoadError, Missing, SignInPrompt, EmptyState } from '@/components/RouteStates';
 
 export const Route = createFileRoute('/perfil/$id')({
-  loader: async ({ context }) => { await context.queryClient.ensureQueryData(platformQuery); },
+  loader: async ({ context, params }) => { await Promise.all([context.queryClient.ensureQueryData(profileQuery(params.id)), context.queryClient.ensureInfiniteQueryData(feedQuery({ autor: params.id }))]); },
   errorComponent: LoadError,
   notFoundComponent: Missing,
   head: () => metadata('Currículo esportivo', 'Biografia, modalidades, pódios e marcas dos esportistas da Mata Sul.'),
@@ -19,15 +20,14 @@ export const Route = createFileRoute('/perfil/$id')({
 
 function Perfil() {
   const { id } = Route.useParams();
-  const { posts, userById, user, follows, act, pending } = useStore();
+  const { user, act, pending } = useActions();
+  const { data: u } = useSuspenseQuery(profileQuery(id));
   const [editing, setEditing] = useState(false);
-  const u = userById(id);
-  if (!u) return <Shell><p className="p-8">Perfil não encontrado.</p></Shell>;
   const own = user?.id === id;
-  const following = follows.some((f) => f.follower === user?.id && f.followed === id);
-  const meus = posts.filter((p) => p.autor === id);
-  const seguidores = follows.filter((f) => f.followed === id).length;
-  const seguindo = follows.filter((f) => f.follower === id).length;
+  const following = useFollowing(id, !own);
+  if (!u) return <Shell><p className="p-8">Perfil não encontrado.</p></Shell>;
+  const seguidores = u.seguidores;
+  const seguindo = u.seguindo;
   const dados = [u.role, u.modalidades.slice(0, 2).join(' · ') || null, u.cidade ? `${u.cidade}, PE` : null].filter(Boolean).join(' · ');
 
   return (
@@ -91,8 +91,7 @@ function Perfil() {
         </div>
 
         <h2 className="text-2xl font-bold uppercase">Publicações</h2>
-        {meus.map((p, i) => <FadeIn key={p.id} i={i}><PostCard post={p} /></FadeIn>)}
-        {!meus.length && <EmptyState icon={MessageSquare} title={own ? 'Mostre seu treino pra região.' : 'Nenhuma publicação ainda.'} />}
+        <div><FeedList filter={{ autor: id }} empty={<EmptyState icon={MessageSquare} title={own ? 'Mostre seu treino pra região.' : 'Nenhuma publicação ainda.'} />} /></div>
       </div>
     </Shell>
   );

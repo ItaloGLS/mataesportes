@@ -315,9 +315,11 @@ export type Database = {
         Row: {
           autor: string
           cidade: string
+          comments_count: number
           created_at: string
           id: string
           image_path: string | null
+          likes_count: number
           modalidade: string
           texto: string
           tipo: string
@@ -325,9 +327,11 @@ export type Database = {
         Insert: {
           autor: string
           cidade: string
+          comments_count?: number
           created_at?: string
           id?: string
           image_path?: string | null
+          likes_count?: number
           modalidade: string
           texto: string
           tipo: string
@@ -335,9 +339,11 @@ export type Database = {
         Update: {
           autor?: string
           cidade?: string
+          comments_count?: number
           created_at?: string
           id?: string
           image_path?: string | null
+          likes_count?: number
           modalidade?: string
           texto?: string
           tipo?: string

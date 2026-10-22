@@ -2,10 +2,10 @@ import { useState } from 'react';
 import { Plus, X } from 'lucide-react';
 import { Button } from './ui/button';
 import { CIDADES,MODALIDADES,marcaLabel,participanteLabel,type Evento,type ResultadoItem } from '@/lib/data';
-import { useStore } from '@/lib/store';
+import { useActions } from '@/lib/store';
 const input='mt-1 w-full rounded-sm border bg-card px-3 py-2 text-sm';
 export function EventForm({event,onDone}:{event?:Evento;onDone:()=>void}){
- const {act,pending}=useStore();const [message,setMessage]=useState('');
+ const {act,pending}=useActions();const [message,setMessage]=useState('');
  const [modalidade,setModalidade]=useState(event?.modalidade??MODALIDADES[0]!);
  const [encerrado,setEncerrado]=useState(event?.encerrado??false);
  const [resultado,setResultado]=useState<ResultadoItem[]>(event?.resultado??[]);

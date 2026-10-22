@@ -2,7 +2,7 @@ import { Link } from '@tanstack/react-router';
 import { BadgeCheck, ExternalLink, MapPin, MoreVertical, Pencil, Trash2 } from 'lucide-react';
 import { Button } from './ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from './ui/dropdown-menu';
-import { useStore } from '@/lib/store';
+import { useActions } from '@/lib/store';
 import { formatData, type Oportunidade } from '@/lib/data';
 
 const selo: Record<Oportunidade['tipo'], string> = {
@@ -12,8 +12,7 @@ const selo: Record<Oportunidade['tipo'], string> = {
 };
 
 export function OportunidadeCard({ o, onEdit }: { o: Oportunidade; onEdit?: (o: Oportunidade) => void }) {
-  const { user, userById, act } = useStore();
-  const autor = userById(o.autor);
+  const { user, act } = useActions();
   const mine = user?.id === o.autor;
   const encerrada = o.prazo ? Date.parse(o.prazo + 'T23:59:59') < Date.now() : false;
   const dias = o.prazo ? Math.ceil((Date.parse(o.prazo + 'T23:59:59') - Date.now()) / 86400000) : null;
@@ -54,7 +53,7 @@ export function OportunidadeCard({ o, onEdit }: { o: Oportunidade; onEdit?: (o: 
         </div>
       )}
       <div className="mt-auto flex items-center justify-between gap-3 pt-1">
-        {autor && !oficial && <Link to="/perfil/$id" params={{ id: autor.id }} className="text-xs font-semibold text-muted-foreground hover:text-foreground">Publicado por {autor.nome}</Link>}
+        {o.autorNome && !oficial && <Link to="/perfil/$id" params={{ id: o.autor }} className="text-xs font-semibold text-muted-foreground hover:text-foreground">Publicado por {o.autorNome}</Link>}
         {o.link && <Button variant="outline" size="sm" asChild className="ml-auto"><a href={o.link} target="_blank" rel="noopener noreferrer">Ver edital<ExternalLink className="h-4 w-4" /></a></Button>}
       </div>
     </article>
