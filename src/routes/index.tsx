@@ -1,23 +1,25 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
+import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import hero from "@/assets/hero.webp";
 import { motion, AnimatePresence } from "motion/react";
 import { Shell, FadeIn } from "@/components/Shell";
 import { Button } from "@/components/ui/button";
 import { ArrowUpRight, Send, Plus, X, Flag, CalendarDays } from "lucide-react";
-import { PostCard } from "@/components/PostCard";
+import { FeedList } from "@/components/FeedList";
 import { EventoCard } from "@/components/EventoCard";
-import { useStore, uploadImage } from "@/lib/store";
+import { useActions, uploadImage } from "@/lib/store";
 import { MODALIDADES, type Post } from "@/lib/data";
-import { platformQuery } from "@/lib/queries";
+import { feedQuery, profileQuery, upcomingEventsQuery } from "@/lib/queries";
 import { LoadError, Missing, SignInPrompt, EmptyState } from "@/components/RouteStates";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/")({
-  loader: async ({context}) => { await context.queryClient.ensureQueryData(platformQuery); },
+  validateSearch: (s:Record<string,unknown>): {tipo?:string;publicar?:boolean} => ({...(typeof s['tipo']==='string'?{tipo:s['tipo']}:{}),...(s['publicar']===true||s['publicar']==='true'?{publicar:true}:{})}),
+  loaderDeps: ({search}) => ({tipo: search.tipo}),
+  loader: async ({context, deps}) => { await Promise.all([context.queryClient.ensureInfiniteQueryData(feedQuery({tipo:deps.tipo})), context.queryClient.ensureQueryData(upcomingEventsQuery)]); },
   errorComponent: LoadError,
   notFoundComponent: Missing,
-  validateSearch: (s:Record<string,unknown>): {tipo?:string;publicar?:boolean} => ({...(typeof s['tipo']==='string'?{tipo:s['tipo']}:{}),...(s['publicar']===true||s['publicar']==='true'?{publicar:true}:{})}),
   head: () => ({
     links: [{ rel: "preload", as: "image", href: hero, fetchPriority: "high" }],
     meta: [
@@ -35,7 +37,9 @@ export const Route = createFileRoute("/")({
 const TIPOS: Post["tipo"][] = ["Conquista", "Treino", "Peneira", "Notícia"];
 
 function Feed() {
-  const { posts, eventos, publicar, me, user, pending } = useStore();
+  const { publicar, user, pending } = useActions();
+  const { data: eventos } = useSuspenseQuery(upcomingEventsQuery);
+  const qc = useQueryClient();
   const {tipo: filtro, publicar: openRequested} = Route.useSearch();
   const navigate = Route.useNavigate();
   const [texto, setTexto] = useState("");
@@ -46,7 +50,6 @@ function Feed() {
   const setComposerOpen = (open:boolean) => {setLocalOpen(open);if(!open)void navigate({search:filtro?{tipo:filtro}:{}});};
   const [image, setImage] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
-  const lista = filtro ? posts.filter((p) => p.tipo === filtro) : posts;
 
   return (
     <Shell>
