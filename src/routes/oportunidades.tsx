@@ -5,9 +5,10 @@ import { Shell, Chip, FadeIn } from '@/components/Shell';
 import { Button } from '@/components/ui/button';
 import { OportunidadeCard } from '@/components/OportunidadeCard';
 import { OportunidadeForm } from '@/components/OportunidadeForm';
-import { useStore } from '@/lib/store';
+import { useSuspenseQuery } from '@tanstack/react-query';
+import { useSession } from '@/lib/store';
 import { TIPOS_OPORTUNIDADE, type Oportunidade } from '@/lib/data';
-import { platformQuery } from '@/lib/queries';
+import { opportunitiesQuery } from '@/lib/queries';
 import { metadata, LoadError, Missing, SignInPrompt, EmptyState } from '@/components/RouteStates';
 
 export const Route = createFileRoute('/oportunidades')({
@@ -15,7 +16,7 @@ export const Route = createFileRoute('/oportunidades')({
     const tipo = typeof s['tipo'] === 'string' ? s['tipo'] : undefined;
     return tipo ? { tipo } : {};
   },
-  loader: async ({ context }) => { await context.queryClient.ensureQueryData(platformQuery); },
+  loader: async ({ context }) => { await context.queryClient.ensureQueryData(opportunitiesQuery); },
   errorComponent: LoadError,
   notFoundComponent: Missing,
   head: () => metadata('Oportunidades, editais e bolsas', 'Editais, bolsas-atleta e processos seletivos do esporte na Mata Sul de Pernambuco.'),
@@ -23,7 +24,8 @@ export const Route = createFileRoute('/oportunidades')({
 });
 
 function Oportunidades() {
-  const { oportunidades, user } = useStore();
+  const { user } = useSession();
+  const { data: oportunidades } = useSuspenseQuery(opportunitiesQuery);
   const { tipo } = Route.useSearch();
   const navigate = Route.useNavigate();
   const [form, setForm] = useState(false);
