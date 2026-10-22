@@ -1,19 +1,19 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useSuspenseQuery } from '@tanstack/react-query';
 import { ArrowLeft, CalendarDays, Users, Trophy, Pencil, Trash2, MoreVertical } from 'lucide-react';
 import { Shell, Avatar } from '@/components/Shell';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { EventForm } from '@/components/EventForm';
-import { useStore } from '@/lib/store';
+import { useActions, useRegistrations } from '@/lib/store';
 import { supabase } from '@/integrations/supabase/client';
-import { platformQuery } from '@/lib/queries';
+import { eventQuery } from '@/lib/queries';
 import { formatData, marcaLabel, participanteLabel } from '@/lib/data';
 import { metadata, LoadError, Missing, SignInPrompt, EmptyState } from '@/components/RouteStates';
 
 export const Route = createFileRoute('/eventos/$id')({
-  loader: async ({ context }) => { await context.queryClient.ensureQueryData(platformQuery); },
+  loader: async ({ context, params }) => { await context.queryClient.ensureQueryData(eventQuery(params.id)); },
   errorComponent: LoadError,
   notFoundComponent: Missing,
   head: () => metadata('Detalhes do evento', 'Categorias, local, vagas e inscrição no evento esportivo.'),
@@ -23,19 +23,21 @@ export const Route = createFileRoute('/eventos/$id')({
 function Detalhe() {
   const { id } = Route.useParams();
   const navigate = Route.useNavigate();
-  const { eventos, inscricoes, inscrever, userById, user, act, pending } = useStore();
+  const { user, act, pending } = useActions();
+  const inscricoes = useRegistrations();
+  const { data: detail } = useSuspenseQuery(eventQuery(id));
   const [editing, setEditing] = useState(false);
   const [participantsOpen, setParticipantsOpen] = useState(false);
   const [message, setMessage] = useState('');
-  const e = eventos.find((x) => x.id === id);
+  const e = detail?.evento;
   const owner = Boolean(e && user?.id === e.organizador);
   const participants = useQuery({
     queryKey: ['participantes', id, user?.id],
     enabled: owner && participantsOpen,
     queryFn: async () => {
-      const rows: { user_id: string; created_at: string }[] = [];
+      const rows: { user_id: string; created_at: string; profiles: { nome: string } | null }[] = [];
       for (let start = 0; ; start += 500) {
-        const { data, error } = await supabase.from('inscricoes').select('user_id,created_at').eq('evento_id', id).order('created_at').range(start, start + 499);
+        const { data, error } = await supabase.from('inscricoes').select('user_id,created_at,profiles!inscricoes_user_id_fkey(nome)').eq('evento_id', id).order('created_at').range(start, start + 499);
         if (error) throw error;
         rows.push(...(data ?? []));
         if ((data?.length ?? 0) < 500) return rows;
@@ -43,8 +45,9 @@ function Detalhe() {
     },
   });
   if (!e) return <Shell><p className="p-8">Evento não encontrado.</p></Shell>;
-  const org = userById(e.organizador);
+  const org = detail.organizador;
   const registered = inscricoes.has(id);
+  const inscrever = (eventId: string) => act({ kind: 'registration', id: eventId, active: !registered });
   const closed = e.encerrado || e.data < new Date().toLocaleDateString('en-CA');
   const ranking = [...e.resultado].sort((a, b) => a.posicao - b.posicao);
   const [dia, mes] = formatData(e.data).split(' de ');
