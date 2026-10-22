@@ -1,24 +1,29 @@
-import type { Post } from '../data';
+import type { Comentario, FeedPage, Post } from '../data';
 
-export interface SocialData {
-  posts: Post[];
-  likes: { post_id: string; user_id: string }[];
+/** Infinite-query shape used for every feed (home, by type, by author). */
+export interface FeedPages { pages: FeedPage[]; pageParams: unknown[] }
+
+export function updateFeedPost(data: FeedPages, postId: string, fn: (p: Post) => Post): FeedPages {
+  let changed = false;
+  const pages = data.pages.map(page => {
+    if (!page.posts.some(p => p.id === postId)) return page;
+    changed = true;
+    return { ...page, posts: page.posts.map(p => p.id === postId ? fn(p) : p) };
+  });
+  return changed ? { ...data, pages } : data;
 }
 
-export function setCachedLike<T extends SocialData>(data: T, postId: string, userId: string, active: boolean): T {
-  const hadLike = data.likes.some(l => l.post_id === postId && l.user_id === userId);
-  if (hadLike === active) return data;
-  return {
-    ...data,
-    likes: active ? [...data.likes, { post_id: postId, user_id: userId }] : data.likes.filter(l => l.post_id !== postId || l.user_id !== userId),
-    posts: data.posts.map(p => p.id === postId ? { ...p, likes: Math.max(0, p.likes + (active ? 1 : -1)) } : p),
-  };
+export const shiftLikes = (data: FeedPages, postId: string, delta: number) =>
+  updateFeedPost(data, postId, p => ({ ...p, likes: Math.max(0, p.likes + delta) }));
+
+export const shiftComments = (data: FeedPages, postId: string, delta: number) =>
+  updateFeedPost(data, postId, p => ({ ...p, comentarios: Math.max(0, p.comentarios + delta) }));
+
+/** Liked flags for the posts a viewer has loaded; only known posts change. */
+export function setLikedFlag(flags: Record<string, boolean>, postId: string, active: boolean): Record<string, boolean> {
+  if (!(postId in flags) || flags[postId] === active) return flags;
+  return { ...flags, [postId]: active };
 }
 
-export function addCachedComment<T extends SocialData>(data: T, postId: string, comment: Post['comentarios'][number]): T {
-  return { ...data, posts: data.posts.map(p => p.id === postId ? { ...p, comentarios: [...p.comentarios, comment] } : p) };
-}
-
-export function removeCachedComment<T extends SocialData>(data: T, commentId: string): T {
-  return { ...data, posts: data.posts.map(p => ({ ...p, comentarios: p.comentarios.filter(c => c.id !== commentId) })) };
-}
+export const addComment = (list: Comentario[], comment: Comentario) => [...list, comment];
+export const removeComment = (list: Comentario[], commentId: string) => list.filter(c => c.id !== commentId);
