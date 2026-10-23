@@ -1,0 +1,22 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: atletar-web
+    ports:
+      - "5173:5173"
+    volumes:
+      # Sincroniza o código local com o container para suporte a hot-reload
+      - .:/app
+      # Preserva os módulos instalados dentro do container
+      - /app/node_modules
+      - /app/.tanstack
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      - HOST=0.0.0.0
+      - PORT=5173
+      - NODE_ENV=development
+    restart: unless-stopped
