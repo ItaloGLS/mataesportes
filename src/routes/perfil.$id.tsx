@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { useState } from 'react';
 import { useSuspenseQuery } from '@tanstack/react-query';
-import { Pencil, Trophy, Timer, MessageSquare } from 'lucide-react';
+import { Pencil, Trophy, Timer, MessageSquare, Flag } from 'lucide-react';
 import { Shell, Avatar } from '@/components/Shell';
 import { Button } from '@/components/ui/button';
 import { FeedList } from '@/components/FeedList';
@@ -9,6 +9,7 @@ import { ProfileForm } from '@/components/ProfileForm';
 import { useActions, useFollowing } from '@/lib/store';
 import { feedQuery, profileQuery } from '@/lib/queries';
 import { metadata, LoadError, Missing, SignInPrompt, EmptyState } from '@/components/RouteStates';
+import { ReportModal } from '@/components/ReportModal';
 
 export const Route = createFileRoute('/perfil/$id')({
   loader: async ({ context, params }) => { await Promise.all([context.queryClient.ensureQueryData(profileQuery(params.id)), context.queryClient.ensureInfiniteQueryData(feedQuery({ autor: params.id }))]); },
@@ -23,6 +24,7 @@ function Perfil() {
   const { user, act, pending } = useActions();
   const { data: u } = useSuspenseQuery(profileQuery(id));
   const [editing, setEditing] = useState(false);
+  const [reporting, setReporting] = useState(false);
   const own = user?.id === id;
   const following = useFollowing(id, !own);
   if (!u) return <Shell><p className="p-8">Perfil não encontrado.</p></Shell>;
@@ -44,7 +46,12 @@ function Perfil() {
             {own ? (
               <Button variant="outline" onClick={() => setEditing(!editing)}><Pencil />{editing ? 'Fechar' : 'Editar perfil'}</Button>
             ) : user ? (
-              <Button disabled={pending} variant={following ? 'outline' : 'default'} onClick={async () => { try { await act({ kind: 'follow', id, active: !following }); } catch { /* feedback is shown by the mutation */ } }}>{following ? 'Deixar de seguir' : 'Seguir'}</Button>
+              <div className="flex items-center gap-2">
+                <Button disabled={pending} variant={following ? 'outline' : 'default'} onClick={async () => { try { await act({ kind: 'follow', id, active: !following }); } catch { /* feedback is shown by the mutation */ } }}>{following ? 'Deixar de seguir' : 'Seguir'}</Button>
+                <Button variant="ghost" size="icon" title="Denunciar perfil" aria-label="Denunciar perfil" onClick={() => setReporting(true)}>
+                  <Flag className="h-4 w-4 text-muted-foreground hover:text-destructive" />
+                </Button>
+              </div>
             ) : <SignInPrompt />}
           </div>
           {u.bio && <p className="whitespace-pre-wrap leading-relaxed">{u.bio}</p>}
@@ -93,6 +100,7 @@ function Perfil() {
         <h2 className="text-2xl font-bold uppercase">Publicações</h2>
         <div><FeedList filter={{ autor: id }} empty={<EmptyState icon={MessageSquare} title={own ? 'Mostre seu treino pra região.' : 'Nenhuma publicação ainda.'} />} /></div>
       </div>
+      <ReportModal isOpen={reporting} onClose={() => setReporting(false)} targetType="profile" targetId={id} targetTitle={u.nome} />
     </Shell>
   );
 }

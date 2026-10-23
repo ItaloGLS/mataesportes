@@ -51,6 +51,8 @@ function keysFor(a:Action):unknown[][]{
   case 'follow': return [['profile',a.id],['following']];
   case 'profile': return [['profile'],['feed'],['search'],['comments'],['event']];
   case 'opportunity.create': case 'opportunity.update': case 'opportunity.delete': return [['opportunities']];
+  case 'report': return [['reports'],['feed'],['comments'],['opportunities']];
+  case 'profile_private.save': return [['profile_private'],['profile']];
   default: return [];
  }
 }

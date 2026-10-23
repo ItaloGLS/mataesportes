@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { ShieldCheck } from 'lucide-react';
+import { toast } from 'sonner';
 import { Button } from './ui/button';
 import { CIDADES, MODALIDADES, TIPOS_OPORTUNIDADE, type Oportunidade } from '@/lib/data';
 import { useActions } from '@/lib/store';
@@ -24,9 +26,14 @@ export function OportunidadeForm({ oportunidade, onDone }: { oportunidade?: Opor
       };
       try {
         await act(oportunidade ? { kind: 'opportunity.update', id: oportunidade.id, value } : { kind: 'opportunity.create', value });
+        toast.success(oportunidade ? 'Oportunidade atualizada!' : 'Oportunidade enviada para aprovação da moderação!');
         onDone();
       } catch { setMessage('Não foi possível salvar. Confira os campos e tente novamente.'); }
     }}>
+      <div className="md:col-span-2 rounded-sm border border-seal/30 bg-seal/5 p-3 text-xs text-muted-foreground flex items-center gap-2">
+        <ShieldCheck className="h-4 w-4 text-seal shrink-0" />
+        <span>Para proteção dos atletas e combate a golpes, as publicações de oportunidades são verificadas pela moderação antes de ficarem públicas.</span>
+      </div>
       <label className="text-xs font-bold">Tipo
         <select aria-label="Tipo de oportunidade" name="tipo" defaultValue={oportunidade?.tipo} className={input}>
           {TIPOS_OPORTUNIDADE.map((t) => <option key={t}>{t}</option>)}

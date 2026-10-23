@@ -3,7 +3,7 @@ import { createClient } from '@supabase/supabase-js';
 import { z } from 'zod';
 import type { Database } from '@/integrations/supabase/types';
 import { requireSupabaseAuth } from '@/integrations/supabase/auth-middleware';
-import { actionSchema } from './domain/schemas';
+import { actionSchema, isMinor } from './domain/schemas';
 import { initials, FEED_PAGE_SIZE, type Author, type Comentario, type Evento, type FeedPage, type Oportunidade, type Perfil, type Post, type User } from './data';
 
 type Db = ReturnType<typeof createClient<Database>>;
@@ -115,13 +115,24 @@ export const getEvent = createServerFn({ method: 'GET' })
 
 export const getOpportunities = createServerFn({ method: 'GET' }).handler(async (): Promise<Oportunidade[]> => {
  const db = publicDb();
- const { data: rows, error } = await db.from('oportunidades').select('*').order('created_at', { ascending: false }).order('id').limit(300);
+ const { data: rows, error } = await db.from('oportunidades').select('*').eq('status', 'aprovada').order('created_at', { ascending: false }).order('id').limit(300);
  if (error) fail('as oportunidades');
  const ids = [...new Set((rows ?? []).map(o => o.autor))];
  const { data: people } = ids.length ? await db.from('profiles').select('id,nome').in('id', ids) : { data: [] };
  const names = new Map((people ?? []).map(p => [p.id, p.nome]));
  return (rows ?? []).map(o => ({ ...o, tipo: o.tipo as Oportunidade['tipo'], autorNome: names.get(o.autor) ?? null }));
 });
+
+export const getMyPrivateProfile = createServerFn({ method: 'GET' }).middleware([requireSupabaseAuth])
+ .handler(async ({ context }) => {
+  const { data, error } = await context.supabase
+   .from('profile_private')
+   .select('birthdate, parent_email, consent_given')
+   .eq('user_id', context.userId)
+   .maybeSingle();
+  if (error) return null;
+  return data;
+ });
 
 export const getProfile = createServerFn({ method: 'GET' })
  .inputValidator((input: unknown) => z.object({ id: uuid }).parse(input))
@@ -200,6 +211,26 @@ export const mutatePlatform = createServerFn({method:'POST'}).middleware([requir
   case 'opportunity.create': ({error}=await db.from('oportunidades').insert({...data.value,modalidade:data.value.modalidade||null,prazo:data.value.prazo||null,autor:uid}));break;
   case 'opportunity.update': await ownedOpportunity(data.id);({error}=await db.from('oportunidades').update({...data.value,modalidade:data.value.modalidade||null,prazo:data.value.prazo||null}).eq('id',data.id).eq('autor',uid));break;
   case 'opportunity.delete': await ownedOpportunity(data.id);({error}=await db.from('oportunidades').delete().eq('id',data.id).eq('autor',uid));break;
+  case 'report':
+   ({ error } = await db.from('reports').insert({
+    reporter_id: uid,
+    target_type: data.value.target_type,
+    target_id: data.value.target_id,
+    reason: data.value.reason,
+   }));
+   break;
+  case 'profile_private.save':
+   const under18 = isMinor(data.birthdate);
+   const { error: privErr } = await db.from('profile_private').upsert({
+    user_id: uid,
+    birthdate: data.birthdate,
+    parent_email: data.parent_email ?? null,
+    consent_given: data.consent_given,
+    updated_at: new Date().toISOString(),
+   }, { onConflict: 'user_id' });
+   if (privErr) { error = privErr; break; }
+   ({ error } = await db.from('profiles').update({ is_minor: under18 }).eq('id', uid));
+   break;
  }
  if(error){if(error.message.includes('Vagas'))throw new Error(error.message);if(error.message.includes('encerrado'))throw new Error('Evento encerrado.');throw new Error('Não foi possível salvar. Confira os dados e tente novamente.');}
  return {ok:true};
