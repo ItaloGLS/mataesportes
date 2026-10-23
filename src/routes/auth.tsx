@@ -71,6 +71,11 @@ function Auth() {
                     </div>
                   )}
                   <Button type="submit" disabled={busy} className="w-full bg-accent font-bold text-accent-foreground hover:bg-accent/80">{busy ? 'Aguarde…' : mode === 'signup' ? 'Cadastrar' : mode === 'forgot' ? 'Enviar link' : 'Entrar'}</Button>
+                  {mode === 'signup' && (
+                    <p className="text-center text-xs text-muted-foreground mt-2">
+                      Ao se cadastrar, você concorda com nossos <Link to="/termos" className="underline hover:text-foreground">Termos, Privacidade e Proteção a Menores</Link>.
+                    </p>
+                  )}
                 </form>
                 {message && <p role={failed ? 'alert' : 'status'} className="mt-4 text-sm">{message}</p>}
                 <p className="mt-6 border-t pt-5 text-sm text-muted-foreground">

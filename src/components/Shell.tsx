@@ -59,6 +59,19 @@ export function Shell({ children, bare }: { children: ReactNode; bare?: boolean 
 
       <main className={`mx-auto max-w-6xl md:pb-10 ${bare ? "" : "mobile-scroll-space"}`}>{children}</main>
 
+      {!bare && (
+        <footer className="border-t bg-card/40 py-8 text-xs text-muted-foreground hidden md:block">
+          <div className="mx-auto max-w-6xl px-4 md:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <p>© {new Date().getFullYear()} Atletar — A rede social dos esportistas.</p>
+            <div className="flex flex-wrap items-center gap-4">
+              <Link to="/termos" className="hover:text-foreground transition-colors">Termos de Uso</Link>
+              <Link to="/termos" className="hover:text-foreground transition-colors">Privacidade & LGPD</Link>
+              <Link to="/termos" className="hover:text-foreground transition-colors">Proteção a Menores</Link>
+            </div>
+          </div>
+        </footer>
+      )}
+
       {!bare && <nav aria-label="Navegação do celular" className="mobile-bottom-nav fixed inset-x-3 bottom-3 z-30 grid grid-cols-5 items-center rounded-touch bg-card/95 p-2 backdrop-blur md:hidden">
         {NAV.slice(0,2).map((n) => <Link key={n.to} to={n.to} preload="viewport" activeOptions={{exact:n.to==='/'}} className="flex min-h-12 flex-col items-center gap-1 text-[10px] font-semibold text-muted-foreground">{({isActive})=><><span className={`grid h-7 w-10 place-items-center rounded-full ${isActive?'bg-secondary text-foreground':''}`}><n.icon className="h-5 w-5" strokeWidth={isActive?2.5:2}/></span>{n.label}</>}</Link>)}
         <Button size="icon" className="h-12 w-12 justify-self-center rounded-full bg-accent text-accent-foreground shadow-none hover:bg-accent/80" aria-label="Novo registro" title="Novo registro" onClick={async()=>{if(!user){await navigate({to:'/auth'});return;}await navigate({to:'/',search:{publicar:true}});window.scrollTo({top:0,behavior:'smooth'});}}><Plus className="h-6 w-6" /></Button>
