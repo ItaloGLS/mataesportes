@@ -21,7 +21,7 @@
 - Funções `has_role()` e `grant_role()` com `SECURITY DEFINER` e auditoria append-only.
 
 ### Fase 2: Menores, Moderação, Denúncias e Schemas de Domínio
-- Branch: `fase-2-menores-e-moderacao`
+- Branch: `fase-2-menores-e-moderacao` (mesclada em `seguranca`)
 - **Migração [0010_security_moderation_and_minors.sql](file:///c:/Users/joao%20guilherme/Desktop/mataesportes/drizzle/migrations/0010_security_moderation_and_minors.sql)**:
   - Tabela `profile_private` isolada (somente o próprio usuário ou staff acessam).
   - Colunas `verified` e `is_minor` em `profiles` protegidas por trigger contra alteração direta.
@@ -38,3 +38,14 @@
   - Actions `report` e `profile_private.save` em `actionSchema`.
 - **Testes Unitários em [schemas.test.ts](file:///c:/Users/joao%20guilherme/Desktop/mataesportes/src/lib/domain/schemas.test.ts)**:
   - Casos de teste de cálculo de idade, virada de aniversário, 29 de fevereiro bissexto, validação de denúncias e status de oportunidades.
+
+### Fase 3: Fluxo de Denúncia & Moderação na UI
+- Branch: `fase-3-ui-denuncia-e-moderacao`
+- **Componente [ReportModal.tsx](file:///c:/Users/joao%20guilherme/Desktop/mataesportes/src/components/ReportModal.tsx)**:
+  - Modal acessível com opções categorizadas de denúncia (golpes/links falsos, risco para menores, perfil falso, ofensas).
+  - Integração nos cards de publicações ([PostCard.tsx](file:///c:/Users/joao%20guilherme/Desktop/mataesportes/src/components/PostCard.tsx)), oportunidades ([OportunidadeCard.tsx](file:///c:/Users/joao%20guilherme/Desktop/mataesportes/src/components/OportunidadeCard.tsx)) e na página de perfil ([perfil.$id.tsx](file:///c:/Users/joao%20guilherme/Desktop/mataesportes/src/routes/perfil.$id.tsx)).
+- **Componente [BirthdatePromptModal.tsx](file:///c:/Users/joao%20guilherme/Desktop/mataesportes/src/components/BirthdatePromptModal.tsx)**:
+  - Coleta de data de nascimento com cálculo de idade instantâneo, aviso de proteção de menores para < 18 anos, e termo de consentimento parental.
+- **Moderação de Oportunidades**:
+  - Banner informativo em [OportunidadeForm.tsx](file:///c:/Users/joao%20guilherme/Desktop/mataesportes/src/components/OportunidadeForm.tsx) explicando a verificação prévia de links e oportunidades pela moderação.
+  - Filtro em `getOpportunities()` e `getFeed()` ignorando itens ocultos ou pendentes de aprovação.
