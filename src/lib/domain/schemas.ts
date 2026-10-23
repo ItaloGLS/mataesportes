@@ -83,6 +83,26 @@ export const reportSchema = z.object({
   reason: text(1000).min(3, 'A justificativa deve ter no mínimo 3 caracteres')
 });
 
+export const reviewReportSchema = z.object({
+  report_id: z.number().int(),
+  status: z.enum(['analisado', 'descartado']),
+  hide_target: z.boolean().default(false),
+  target_type: z.enum(['post', 'profile', 'opportunity', 'comment']),
+  target_id: uuid
+});
+
+export const reviewOpportunitySchema = z.object({
+  opportunity_id: uuid,
+  status: z.enum(['aprovada', 'rejeitada'])
+});
+
+export const applySanctionSchema = z.object({
+  user_id: uuid,
+  sanction_type: z.enum(['warning', 'suspension', 'ban']),
+  reason: text(500).min(3, 'A justificativa deve ter no mínimo 3 caracteres'),
+  duration_days: z.number().int().min(1).max(365).optional()
+});
+
 export const actionSchema = z.discriminatedUnion('kind', [
   z.object({ kind: z.literal('post.create'), value: postSchema }),
   z.object({ kind: z.literal('post.update'), id: uuid, value: postSchema }),
@@ -105,7 +125,10 @@ export const actionSchema = z.discriminatedUnion('kind', [
     birthdate: birthdateSchema,
     parent_email: z.string().email('E-mail do responsável inválido').optional().nullable(),
     consent_given: z.boolean().default(false)
-  })
+  }),
+  z.object({ kind: z.literal('moderation.review_report'), value: reviewReportSchema }),
+  z.object({ kind: z.literal('moderation.review_opportunity'), value: reviewOpportunitySchema }),
+  z.object({ kind: z.literal('moderation.apply_sanction'), value: applySanctionSchema })
 ]);
 
 export type Action = z.infer<typeof actionSchema>;

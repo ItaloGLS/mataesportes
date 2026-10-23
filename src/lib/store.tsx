@@ -53,6 +53,9 @@ function keysFor(a:Action):unknown[][]{
   case 'opportunity.create': case 'opportunity.update': case 'opportunity.delete': return [['opportunities']];
   case 'report': return [['reports'],['feed'],['comments'],['opportunities']];
   case 'profile_private.save': return [['profile_private'],['profile']];
+  case 'moderation.review_report': return [['reports'],['moderation'],['feed']];
+  case 'moderation.review_opportunity': return [['opportunities'],['moderation']];
+  case 'moderation.apply_sanction': return [['moderation'],['profile']];
   default: return [];
  }
 }

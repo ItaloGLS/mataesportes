@@ -134,6 +134,28 @@ export const getMyPrivateProfile = createServerFn({ method: 'GET' }).middleware(
   return data;
  });
 
+export const getModerationData = createServerFn({ method: 'GET' }).middleware([requireSupabaseAuth])
+ .handler(async ({ context }) => {
+  const db = context.supabase;
+  const uid = context.userId;
+
+  const { data: isStaff } = await db.rpc('is_staff', { uid });
+  if (!isStaff) throw new Error('Acesso restrito à moderação.');
+
+  const [repRes, oppRes, sancRes] = await Promise.all([
+   db.from('reports').select('*').eq('status', 'pendente').order('created_at', { ascending: false }).limit(100),
+   db.from('oportunidades').select('*').eq('status', 'pendente').order('created_at', { ascending: false }).limit(100),
+   db.from('user_sanctions').select('*').order('created_at', { ascending: false }).limit(50),
+  ]);
+
+  return {
+   isStaff: true,
+   reports: repRes.data ?? [],
+   pendingOpportunities: oppRes.data ?? [],
+   recentSanctions: sancRes.data ?? [],
+  };
+ });
+
 export const getProfile = createServerFn({ method: 'GET' })
  .inputValidator((input: unknown) => z.object({ id: uuid }).parse(input))
  .handler(async ({ data }): Promise<Perfil | null> => {
@@ -231,6 +253,62 @@ export const mutatePlatform = createServerFn({method:'POST'}).middleware([requir
    if (privErr) { error = privErr; break; }
    ({ error } = await db.from('profiles').update({ is_minor: under18 }).eq('id', uid));
    break;
+  case 'moderation.review_report': {
+   const { data: isStaff } = await db.rpc('is_staff', { uid });
+   if (!isStaff) throw new Error('Acesso restrito à moderação.');
+   const { report_id, status, hide_target, target_type, target_id } = data.value;
+   ({ error } = await db.from('reports').update({ status, reviewed_by: uid }).eq('id', report_id));
+   if (hide_target) {
+    if (target_type === 'post') await db.from('posts').update({ hidden: true }).eq('id', target_id);
+    else if (target_type === 'comment') await db.from('comments').update({ hidden: true }).eq('id', target_id);
+   }
+   await db.from('admin_actions').insert({
+    admin_id: uid,
+    action: `review_report_${status}`,
+    target_table: target_type,
+    target_id,
+    reason: `Denúncia #${report_id} ${status}`
+   });
+   break;
+  }
+  case 'moderation.review_opportunity': {
+   const { data: isStaff } = await db.rpc('is_staff', { uid });
+   if (!isStaff) throw new Error('Acesso restrito à moderação.');
+   ({ error } = await db.from('oportunidades').update({ status: data.value.status }).eq('id', data.value.opportunity_id));
+   await db.from('admin_actions').insert({
+    admin_id: uid,
+    action: `review_opportunity_${data.value.status}`,
+    target_table: 'oportunidades',
+    target_id: data.value.opportunity_id,
+    reason: `Oportunidade ${data.value.status}`
+   });
+   break;
+  }
+  case 'moderation.apply_sanction': {
+   const { data: isStaff } = await db.rpc('is_staff', { uid });
+   if (!isStaff) throw new Error('Acesso restrito à moderação.');
+   let expiresAt: string | null = null;
+   if (data.value.sanction_type === 'suspension' && data.value.duration_days) {
+    const exp = new Date();
+    exp.setDate(exp.getDate() + data.value.duration_days);
+    expiresAt = exp.toISOString();
+   }
+   ({ error } = await db.from('user_sanctions').insert({
+    user_id: data.value.user_id,
+    sanction_type: data.value.sanction_type,
+    reason: data.value.reason,
+    expires_at: expiresAt,
+    created_by: uid
+   }));
+   await db.from('admin_actions').insert({
+    admin_id: uid,
+    action: `apply_sanction_${data.value.sanction_type}`,
+    target_table: 'user_sanctions',
+    target_id: data.value.user_id,
+    reason: data.value.reason
+   });
+   break;
+  }
  }
  if(error){if(error.message.includes('Vagas'))throw new Error(error.message);if(error.message.includes('encerrado'))throw new Error('Evento encerrado.');throw new Error('Não foi possível salvar. Confira os dados e tente novamente.');}
  return {ok:true};

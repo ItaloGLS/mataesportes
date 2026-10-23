@@ -8,7 +8,10 @@ import {
   calculateAge,
   isMinor,
   birthdateSchema,
-  reportSchema
+  reportSchema,
+  reviewReportSchema,
+  reviewOpportunitySchema,
+  applySanctionSchema
 } from './schemas';
 
 const opportunity = {
@@ -150,5 +153,44 @@ describe('Moderation and Report rules', () => {
       target_id: validUUID,
       reason: 'Oi' // Menos de 3 caracteres
     }).success).toBe(false);
+  });
+
+  it('validates reviewReportSchema and action', () => {
+    const valid = {
+      report_id: 1,
+      status: 'analisado' as const,
+      hide_target: true,
+      target_type: 'post' as const,
+      target_id: validUUID
+    };
+    expect(reviewReportSchema.safeParse(valid).success).toBe(true);
+    expect(actionSchema.safeParse({ kind: 'moderation.review_report', value: valid }).success).toBe(true);
+  });
+
+  it('validates reviewOpportunitySchema and action', () => {
+    const valid = {
+      opportunity_id: validUUID,
+      status: 'aprovada' as const
+    };
+    expect(reviewOpportunitySchema.safeParse(valid).success).toBe(true);
+    expect(actionSchema.safeParse({ kind: 'moderation.review_opportunity', value: valid }).success).toBe(true);
+  });
+
+  it('validates applySanctionSchema and action', () => {
+    const validWarning = {
+      user_id: validUUID,
+      sanction_type: 'warning' as const,
+      reason: 'Primeiro aviso sobre regras da comunidade'
+    };
+    expect(applySanctionSchema.safeParse(validWarning).success).toBe(true);
+    expect(actionSchema.safeParse({ kind: 'moderation.apply_sanction', value: validWarning }).success).toBe(true);
+
+    const validSuspension = {
+      user_id: validUUID,
+      sanction_type: 'suspension' as const,
+      reason: 'Reincidência em comportamento inadequado',
+      duration_days: 14
+    };
+    expect(applySanctionSchema.safeParse(validSuspension).success).toBe(true);
   });
 });

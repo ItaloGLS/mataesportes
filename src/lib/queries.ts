@@ -1,5 +1,5 @@
 import { infiniteQueryOptions, queryOptions } from '@tanstack/react-query';
-import { getComments, getEvent, getEvents, getFeed, getOpportunities, getProfile, searchDirectory } from './platform.functions';
+import { getComments, getEvent, getEvents, getFeed, getOpportunities, getProfile, searchDirectory, getModerationData } from './platform.functions';
 import type { FeedCursor } from './data';
 
 /** Public reads stay fresh for a short shared window; writes invalidate them. */
@@ -22,3 +22,4 @@ export const opportunitiesQuery = queryOptions({ queryKey: ['opportunities'], qu
 export const profileQuery = (id: string) => queryOptions({ queryKey: ['profile', id], queryFn: () => getProfile({ data: { id } }), staleTime: PUBLIC_STALE });
 export interface SearchFilter { q: string; modalidade: string; cidade: string; atuacao: string }
 export const searchQuery = (s: SearchFilter) => queryOptions({ queryKey: ['search', s], queryFn: () => searchDirectory({ data: s }), staleTime: PUBLIC_STALE });
+export const moderationQuery = queryOptions({ queryKey: ['moderation'], queryFn: () => getModerationData(), staleTime: 10 * 1000 });
