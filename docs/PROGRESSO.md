@@ -40,7 +40,7 @@
   - Casos de teste de cálculo de idade, virada de aniversário, 29 de fevereiro bissexto, validação de denúncias e status de oportunidades.
 
 ### Fase 3: Fluxo de Denúncia & Moderação na UI
-- Branch: `fase-3-ui-denuncia-e-moderacao`
+- Branch: `fase-3-ui-denuncia-e-moderacao` (mesclada em `seguranca`)
 - **Componente [ReportModal.tsx](file:///c:/Users/joao%20guilherme/Desktop/mataesportes/src/components/ReportModal.tsx)**:
   - Modal acessível com opções categorizadas de denúncia (golpes/links falsos, risco para menores, perfil falso, ofensas).
   - Integração nos cards de publicações ([PostCard.tsx](file:///c:/Users/joao%20guilherme/Desktop/mataesportes/src/components/PostCard.tsx)), oportunidades ([OportunidadeCard.tsx](file:///c:/Users/joao%20guilherme/Desktop/mataesportes/src/components/OportunidadeCard.tsx)) e na página de perfil ([perfil.$id.tsx](file:///c:/Users/joao%20guilherme/Desktop/mataesportes/src/routes/perfil.$id.tsx)).
@@ -49,3 +49,16 @@
 - **Moderação de Oportunidades**:
   - Banner informativo em [OportunidadeForm.tsx](file:///c:/Users/joao%20guilherme/Desktop/mataesportes/src/components/OportunidadeForm.tsx) explicando a verificação prévia de links e oportunidades pela moderação.
   - Filtro em `getOpportunities()` e `getFeed()` ignorando itens ocultos ou pendentes de aprovação.
+
+### Fase 4: Painel de Moderação & Gestão de Sanções
+- Branch: `fase-4-painel-moderacao`
+- **Rota Dedicada [admin.tsx](file:///c:/Users/joao%20guilherme/Desktop/mataesportes/src/routes/admin.tsx)**:
+  - Painel exclusivo para equipe com papel de `moderator` ou `admin` (`is_staff(auth.uid())`).
+  - **Aba Denúncias:** Fila em tempo real de denúncias recebidas com opções de descartar ou ocultar o conteúdo ofensivo e resolver a denúncia.
+  - **Aba Oportunidades:** Fila de editais e bolsas submetidos por usuários comuns, com aprovação direta ou rejeição.
+  - **Aba Sanções:** Interface para aplicar advertências, suspensões temporárias (com prazo em dias) e banimentos permanentes a usuários infratores, gravando no log imutável de auditoria.
+- **Acesso no Shell [Shell.tsx](file:///c:/Users/joao%20guilherme/Desktop/mataesportes/src/components/Shell.tsx)**:
+  - Item "Moderação" inserido no menu suspenso do avatar do usuário.
+- **Server Functions & Schemas**:
+  - `getModerationData()` e handlers de revisão no servidor TanStack Start com validação estrita de identidade e papéis.
+  - Schemas e testes unitários em [schemas.ts](file:///c:/Users/joao%20guilherme/Desktop/mataesportes/src/lib/domain/schemas.ts) e [schemas.test.ts](file:///c:/Users/joao%20guilherme/Desktop/mataesportes/src/lib/domain/schemas.test.ts).
