@@ -51,7 +51,7 @@
   - Filtro em `getOpportunities()` e `getFeed()` ignorando itens ocultos ou pendentes de aprovação.
 
 ### Fase 4: Painel de Moderação & Gestão de Sanções
-- Branch: `fase-4-painel-moderacao`
+- Branch: `fase-4-painel-moderacao` (mesclada em `seguranca`)
 - **Rota Dedicada [admin.tsx](file:///c:/Users/joao%20guilherme/Desktop/mataesportes/src/routes/admin.tsx)**:
   - Painel exclusivo para equipe com papel de `moderator` ou `admin` (`is_staff(auth.uid())`).
   - **Aba Denúncias:** Fila em tempo real de denúncias recebidas com opções de descartar ou ocultar o conteúdo ofensivo e resolver a denúncia.
@@ -62,3 +62,15 @@
 - **Server Functions & Schemas**:
   - `getModerationData()` e handlers de revisão no servidor TanStack Start com validação estrita de identidade e papéis.
   - Schemas e testes unitários em [schemas.ts](file:///c:/Users/joao%20guilherme/Desktop/mataesportes/src/lib/domain/schemas.ts) e [schemas.test.ts](file:///c:/Users/joao%20guilherme/Desktop/mataesportes/src/lib/domain/schemas.test.ts).
+
+### Fase 5: Termos Legais, LGPD & Diretrizes Institucionais
+- Branch: `fase-5-termos-lgpd-e-seguranca`
+- **Nova Rota [termos.tsx](file:///c:/Users/joao%20guilherme/Desktop/mataesportes/src/routes/termos.tsx)**:
+  - Aba **Termos de Uso**: regras de participação, combate a autodeclaração falsa de funções, moderação de oportunidades e sanções.
+  - Aba **Privacidade & LGPD**: conformidade com a Lei 13.709/2018, minimização de dados e isolamento em `profile_private`.
+  - Aba **Proteção a Menores**: regras do ECA, ocultação de cidade em consultas públicas e canal direto de denúncia.
+  - Aba **Diretrizes da Comunidade**: incentivo ao respeito mútuo, integridade esportiva e tolerância zero a fraudes e assédio.
+- **Rodapé Institucional no [Shell.tsx](file:///c:/Users/joao%20guilherme/Desktop/mataesportes/src/components/Shell.tsx)**:
+  - Links para os Termos de Uso, Privacidade e Proteção a Menores.
+- **Tela de Cadastro [auth.tsx](file:///c:/Users/joao%20guilherme/Desktop/mataesportes/src/routes/auth.tsx)**:
+  - Aviso de concordância com os termos e proteção a menores ao cadastrar conta.
